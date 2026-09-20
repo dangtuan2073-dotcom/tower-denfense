@@ -3,15 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#0a0d1a">
 <title>Tower Defense</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
 <style>
-/* ═══════════════════════════════════════════════════════════════
-   THEME VARIABLES
-   ═══════════════════════════════════════════════════════════════ */
 :root{--bg:#0a0d1a;--bg2:#1a1f3a;--card:#1a2540;--card2:#2a3550;--bd:rgba(120,160,255,.2);--bd2:rgba(120,160,255,.4);--txt:#e8eaf6;--dim:#8899bb;--mid:#c5cae9;--acc:#4dabf7;--accd:#1971c2;--accl:#74c0fc;--gold:#ffd43b;--gem:#c084fc;--dgr:#ff6b6b;--ok:#51cf66;--ovl:rgba(10,15,30,.95);--mdl:radial-gradient(circle at center,rgba(10,15,30,.85),rgba(5,8,18,.98))}
 [data-theme="light"]{--bg:#eef2fa;--bg2:#f8faff;--card:#fff;--card2:#eef4ff;--bd:rgba(30,60,120,.25);--bd2:rgba(30,60,120,.5);--txt:#152340;--dim:#4d5f7d;--mid:#2d4060;--acc:#1971c2;--accd:#125a9e;--accl:#4dabf7;--gold:#d98000;--gem:#7c3aed;--dgr:#c92a2a;--ok:#2b8a3e;--ovl:rgba(245,248,255,.97);--mdl:radial-gradient(circle at center,rgba(235,242,252,.94),rgba(215,228,245,.99))}
 [data-theme="ocean"]{--bg:#021a2a;--bg2:#0a2a4a;--card:#0a3050;--card2:#104070;--bd:rgba(100,200,255,.25);--bd2:rgba(100,200,255,.5);--txt:#e0f4ff;--dim:#7098b8;--mid:#a8d0e8;--acc:#00bcd4;--accd:#00838f;--accl:#4dd0e1;--gold:#ffd700;--gem:#7e57c2;--dgr:#ef5350;--ok:#66bb6a;--ovl:rgba(2,26,42,.95);--mdl:radial-gradient(circle at center,rgba(10,42,74,.9),rgba(1,10,20,.99))}
@@ -20,27 +16,14 @@
 [data-theme="neon"]{--bg:#0a0014;--bg2:#1a0030;--card:#14002a;--card2:#2a0050;--bd:rgba(255,0,200,.3);--bd2:rgba(255,0,200,.55);--txt:#f0e8ff;--dim:#a888cc;--mid:#d0b8ff;--acc:#ff00ff;--accd:#a000a0;--accl:#ff5cff;--gold:#00ffe0;--gem:#a855f7;--dgr:#ff0055;--ok:#00ff88;--ovl:rgba(10,0,20,.95);--mdl:radial-gradient(circle at center,rgba(20,0,40,.9),rgba(5,0,10,.99))}
 [data-theme="retro"]{--bg:#0f380f;--bg2:#1a4a1a;--card:#1a3a1a;--card2:#2a5a2a;--bd:rgba(155,188,15,.35);--bd2:rgba(155,188,15,.65);--txt:#c8dc3f;--dim:#7a9a1a;--mid:#a8c81f;--acc:#9bbc0f;--accd:#5a7a0a;--accl:#c8dc3f;--gold:#c8dc3f;--gem:#9bbc0f;--dgr:#c85a3f;--ok:#8bac0f;--ovl:rgba(15,56,15,.96);--mdl:radial-gradient(circle at center,rgba(26,74,26,.92),rgba(5,20,5,.99))}
 [data-theme="candy"]{--bg:#f5e8ff;--bg2:#faf0ff;--card:#fff;--card2:#f5e5ff;--bd:rgba(150,80,200,.3);--bd2:rgba(150,80,200,.55);--txt:#3a1058;--dim:#7d4c9c;--mid:#5a1e7d;--acc:#e91e63;--accd:#ad1457;--accl:#ff6090;--gold:#f57c00;--gem:#9c27b0;--dgr:#c2185b;--ok:#43a047;--ovl:rgba(252,242,255,.96);--mdl:radial-gradient(circle at center,rgba(245,232,255,.95),rgba(220,195,240,.99))}
-
-/* ═══════════════════════════════════════════════════════════════
-   BASE + MOBILE RESET
-   ═══════════════════════════════════════════════════════════════ */
 *{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-tap-highlight-color:transparent;font-family:'Segoe UI','SF Pro Display',-apple-system,BlinkMacSystemFont,'Roboto','Helvetica Neue','Arial',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji'}
 html,body{overflow:hidden;height:100%;width:100%;-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--txt);display:flex;align-items:center;justify-content:center;overscroll-behavior:none;touch-action:manipulation;transition:background-color .4s ease,color .4s ease}
-img,button{image-rendering:-webkit-optimize-contrast}
 button{touch-action:manipulation}
-
-/* ═══════════════════════════════════════════════════════════════
-   WRAP
-   ═══════════════════════════════════════════════════════════════ */
 #wrap{position:relative;width:1100px;height:700px;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35),0 0 0 2px var(--bd2);transform-origin:center center;background:var(--bg);transition:background-color .4s ease,box-shadow .4s ease}
 #game{display:block;width:100%;height:100%;cursor:crosshair;touch-action:none}
-
-/* ═══════════════════════════════════════════════════════════════
-   HUD
-   ═══════════════════════════════════════════════════════════════ */
 #hud{position:absolute;top:0;left:0;right:0;height:52px;background:linear-gradient(180deg,var(--ovl),rgba(10,15,30,.7));backdrop-filter:blur(10px);display:flex;align-items:center;padding:0 14px;gap:8px;border-bottom:1px solid var(--bd);z-index:5;transition:background-color .3s ease,border-color .3s ease}
-.hud-i{display:flex;align-items:center;gap:5px;font-size:14px;font-weight:700;color:var(--txt);position:relative;transition:transform .2s}
+.hud-i{display:flex;align-items:center;gap:5px;font-size:14px;font-weight:700;color:var(--txt);transition:transform .2s}
 .hud-ic{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
 .gold-i{background:radial-gradient(circle,#ffe066,#f59f00);box-shadow:0 0 12px #f59f00a0}
 .hp-i{background:radial-gradient(circle,#ff6b6b,#c92a2a);box-shadow:0 0 12px #c92a2aa0}
@@ -51,10 +34,6 @@ button{touch-action:manipulation}
 @keyframes hudBump{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
 .hud-user{font-size:12px;color:var(--dim);padding:4px 10px;border-radius:8px;background:var(--bd)}
 .spacer{flex:1}
-
-/* ═══════════════════════════════════════════════════════════════
-   BUTTONS
-   ═══════════════════════════════════════════════════════════════ */
 .btn{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--bd2);color:var(--txt);padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:background-color .2s,transform .15s,box-shadow .2s;position:relative;overflow:hidden}
 .btn:hover{background:var(--card2);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
 .btn:active{transform:translateY(0) scale(.97)}
@@ -67,17 +46,12 @@ button{touch-action:manipulation}
 .btn.shake-off{opacity:.5}
 .btn.shake-off::after{content:'';position:absolute;inset:0;background:linear-gradient(45deg,transparent 45%,currentColor 45%,currentColor 55%,transparent 55%);opacity:.7;pointer-events:none;border-radius:8px}
 @keyframes pulse{0%,100%{box-shadow:0 4px 16px rgba(245,159,0,.4)}50%{box-shadow:0 4px 24px rgba(245,159,0,.8)}}
-
-/* ═══════════════════════════════════════════════════════════════
-   TOWER SHOP
-   ═══════════════════════════════════════════════════════════════ */
 #shop{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:8px;padding:10px;background:var(--ovl);backdrop-filter:blur(12px);border-radius:14px;border:1px solid var(--bd);box-shadow:0 10px 40px rgba(0,0,0,.6);z-index:5}
 .tc{width:72px;padding:6px 3px;border-radius:10px;background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--bd);cursor:pointer;text-align:center;position:relative;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
 .tc:hover{transform:translateY(-3px);border-color:var(--accl)}
 .tc:active{transform:translateY(-1px) scale(.96)}
 .tc.sel{border-color:var(--gold);box-shadow:0 0 24px rgba(255,212,59,.6);transform:translateY(-3px)}
 .tc.dis{opacity:.4}
-/* NO CHECKMARK — chỉ glow khi affordable */
 .tc.affordable{border-color:var(--ok);box-shadow:0 0 12px rgba(81,207,102,.4),inset 0 0 12px rgba(81,207,102,.15);animation:glowPulse 2s ease-in-out infinite}
 .tc.affordable.sel{animation:none;box-shadow:0 0 24px rgba(255,212,59,.6)}
 @keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(81,207,102,.35),inset 0 0 8px rgba(81,207,102,.1)}50%{box-shadow:0 0 22px rgba(81,207,102,.75),inset 0 0 16px rgba(81,207,102,.25)}}
@@ -88,10 +62,6 @@ button{touch-action:manipulation}
 .t-c{font-size:10px;font-weight:700;color:var(--gold);transition:color .3s}
 .tc.affordable .t-c{color:var(--ok)}
 .hk{position:absolute;top:2px;left:4px;font-size:9px;color:var(--dim);font-weight:700}
-
-/* ═══════════════════════════════════════════════════════════════
-   TOOLTIP
-   ═══════════════════════════════════════════════════════════════ */
 #tooltip{position:absolute;z-index:200;pointer-events:none;padding:12px 16px;border-radius:12px;background:var(--ovl);border:1px solid var(--bd2);box-shadow:0 15px 40px rgba(0,0,0,.8);font-size:12px;line-height:1.6;min-width:210px;max-width:270px;opacity:0;transform:translateY(6px);transition:opacity .18s,transform .18s}
 #tooltip.show{opacity:1;transform:translateY(0)}
 .tt-nm{font-size:14px;font-weight:800;margin-bottom:2px}
@@ -100,18 +70,10 @@ button{touch-action:manipulation}
 .tt-s b{color:var(--txt);font-weight:700}
 .tt-c{margin-top:6px;padding-top:6px;border-top:1px solid var(--bd);text-align:center;color:var(--gold);font-weight:700;font-size:13px}
 .tt-c.ok{color:var(--ok)}
-
-/* ═══════════════════════════════════════════════════════════════
-   TOWER INFO
-   ═══════════════════════════════════════════════════════════════ */
 #towerInfo{position:absolute;bottom:130px;left:50%;transform:translateX(-50%) translateY(20px);padding:10px 16px;border-radius:12px;background:var(--ovl);backdrop-filter:blur(10px);border:1px solid var(--bd2);display:none;gap:16px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.7);z-index:6;transition:all .25s}
 #towerInfo.show{display:flex;transform:translateX(-50%) translateY(0)}
 #towerInfo .st{font-size:12px;color:var(--mid)}
 #towerInfo .st b{color:var(--txt)}
-
-/* ═══════════════════════════════════════════════════════════════
-   MODALS
-   ═══════════════════════════════════════════════════════════════ */
 .modal{position:absolute;inset:0;z-index:20;background:var(--mdl);display:flex;flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(8px);animation:fadeIn .35s ease;overflow-y:auto;padding:20px}
 .modal.hidden{display:none!important}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -119,7 +81,6 @@ button{touch-action:manipulation}
 #grModal{z-index:70}
 #spinModal{z-index:80}
 #themeModal{z-index:55}
-
 .abox{width:400px;padding:32px 28px;border-radius:20px;background:var(--card);border:1px solid var(--bd2);box-shadow:0 30px 80px rgba(0,0,0,.7);text-align:center;animation:popIn .45s cubic-bezier(.34,1.56,.64,1)}
 @keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
 .al{font-size:30px;font-weight:900;letter-spacing:3px;background:linear-gradient(180deg,var(--accl),var(--accd));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px}
@@ -129,33 +90,27 @@ button{touch-action:manipulation}
 .atb.on{background:var(--card);color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .af{margin-bottom:12px;text-align:left}
 .af label{display:block;font-size:11px;color:var(--dim);margin-bottom:4px;font-weight:600}
-.af input{width:100%;padding:12px 14px;border-radius:10px;background:var(--bg2);border:1px solid var(--bd);color:var(--txt);font-size:14px;outline:none;transition:border-color .2s}
+.af input{width:100%;padding:12px 14px;border-radius:10px;background:var(--bg2);border:1px solid var(--bd);color:var(--txt);font-size:14px;outline:none}
 .af input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(77,171,247,.15)}
 .am{font-size:12px;padding:8px 12px;border-radius:8px;margin-bottom:12px;display:none;text-align:left}
 .am.err{display:block;color:#ff6b6b;background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.3)}
 .am.ok{display:block;color:#51cf66;background:rgba(81,207,102,.1);border:1px solid rgba(81,207,102,.3)}
 .am.warn{display:block;color:#ffd43b;background:rgba(255,212,59,.1);border:1px solid rgba(255,212,59,.3)}
-.ab{width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;background:linear-gradient(180deg,var(--accl),var(--accd));color:#fff;border:none;box-shadow:0 6px 20px rgba(25,113,194,.4);margin-bottom:12px;transition:transform .2s}
-.ab:hover{transform:translateY(-1px)}
+.ab{width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;background:linear-gradient(180deg,var(--accl),var(--accd));color:#fff;border:none;box-shadow:0 6px 20px rgba(25,113,194,.4);margin-bottom:12px}
 .ab:disabled{opacity:.6;cursor:not-allowed}
 .ad{display:flex;align-items:center;gap:12px;color:var(--dim);font-size:11px;margin:14px 0}
 .ad::before,.ad::after{content:'';flex:1;height:1px;background:var(--bd)}
-.ag{width:100%;padding:12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:#fff;color:#3c4043;border:1px solid #dadce0;display:flex;align-items:center;justify-content:center;gap:10px;transition:background-color .2s}
-.ag:hover{background:#f8f9fa;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.ag{width:100%;padding:12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:#fff;color:#3c4043;border:1px solid #dadce0;display:flex;align-items:center;justify-content:center;gap:10px}
 .ag svg{width:18px;height:18px}
-.au{width:100%;padding:12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:var(--dim);border:1px dashed var(--bd2);margin-top:12px;transition:all .2s}
+.au{width:100%;padding:12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:var(--dim);border:1px dashed var(--bd2);margin-top:12px}
 .au:hover{color:var(--txt);border-color:var(--acc);background:var(--bg2)}
 .af2{font-size:11px;color:var(--dim);margin-top:12px}
 .mi{padding:10px 14px;border-radius:10px;background:rgba(77,171,247,.1);border:1px solid rgba(77,171,247,.3);margin-bottom:16px;font-size:12px;color:var(--mid);line-height:1.5;text-align:left}
 .mi b{color:var(--gold)}
-
-/* ═══════════════════════════════════════════════════════════════
-   MAIN MENU
-   ═══════════════════════════════════════════════════════════════ */
 #mt{font-size:52px;font-weight:900;letter-spacing:4px;background:linear-gradient(180deg,var(--accl),var(--accd));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:8px;animation:fl 3s ease-in-out infinite;text-align:center}
 @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
 #ms{color:var(--dim);margin-bottom:24px;font-size:14px;letter-spacing:2px;text-align:center}
-#ml{display:grid;grid-template-columns:repeat(3,180px);gap:14px;margin-bottom:20px;max-height:480px;overflow-y:auto;padding:4px;scrollbar-width:thin;scrollbar-color:var(--bd2) transparent}
+#ml{display:grid;grid-template-columns:repeat(3,180px);gap:14px;margin-bottom:20px;max-height:480px;overflow-y:auto;padding:4px}
 #ml::-webkit-scrollbar{width:6px}
 #ml::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
 .mc{width:180px;padding:12px;border-radius:14px;background:var(--card);border:2px solid var(--bd);cursor:pointer;text-align:center;position:relative;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
@@ -171,10 +126,6 @@ button{touch-action:manipulation}
 .dd.off{background:var(--bd2)}
 .mac{display:flex;gap:10px;flex-direction:column;align-items:center}
 .mr{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-
-/* ═══════════════════════════════════════════════════════════════
-   CONTINUE MODAL
-   ═══════════════════════════════════════════════════════════════ */
 #cModal .cb{padding:30px 40px;border-radius:20px;background:var(--card);border:1px solid var(--bd2);box-shadow:0 30px 80px rgba(0,0,0,.9);text-align:center;max-width:480px;animation:popIn .45s cubic-bezier(.34,1.56,.64,1)}
 #cModal h2{font-size:22px;margin-bottom:12px;color:var(--gold)}
 #cModal p{color:var(--mid);margin-bottom:20px;line-height:1.6;font-size:14px}
@@ -182,58 +133,27 @@ button{touch-action:manipulation}
 #cModal .ci div{color:var(--dim)}
 #cModal .ci b{font-size:15px;display:block;margin-top:2px;color:var(--txt)}
 #cModal .cbt{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-
-/* ═══════════════════════════════════════════════════════════════
-   TUTORIAL
-   ═══════════════════════════════════════════════════════════════ */
 #tut{position:absolute;inset:0;z-index:30;pointer-events:none}
 #tut.hidden{display:none!important}
 .th{position:absolute;border:3px solid var(--gold);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.55),0 0 30px var(--gold);transition:all .5s cubic-bezier(.4,0,.2,1);pointer-events:none}
 .tb{position:absolute;padding:14px 20px;border-radius:14px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--gold);color:var(--txt);font-size:14px;line-height:1.5;max-width:320px;box-shadow:0 15px 40px rgba(0,0,0,.7);transition:all .5s cubic-bezier(.4,0,.2,1);pointer-events:none}
 .tb b{color:var(--gold)}
 .ts{position:absolute;top:62px;right:16px;padding:10px 20px;border-radius:10px;background:linear-gradient(180deg,var(--accl),var(--accd));border:1px solid var(--accl);color:#fff;font-size:13px;font-weight:700;cursor:pointer;pointer-events:auto;z-index:100;box-shadow:0 6px 20px rgba(25,113,194,.5)}
-
-/* ═══════════════════════════════════════════════════════════════
-   WAVE BANNER (improved animation)
-   ═══════════════════════════════════════════════════════════════ */
 #wb{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:64px;font-weight:900;letter-spacing:10px;color:#fff;text-shadow:0 0 30px var(--accl),0 0 60px var(--accd),0 4px 20px rgba(0,0,0,.7);pointer-events:none;opacity:0;z-index:100}
 #wb.show{animation:wbA 1.8s cubic-bezier(.22,1,.36,1)}
-@keyframes wbA{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-8deg);filter:blur(10px)}
-  15%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(2deg);filter:blur(0)}
-  25%{transform:translate(-50%,-50%) scale(1) rotate(0)}
-  70%{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(1.6) rotate(0);filter:blur(6px)}
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   GAME OVER / WIN
-   ═══════════════════════════════════════════════════════════════ */
+@keyframes wbA{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-8deg);filter:blur(10px)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.15) rotate(2deg);filter:blur(0)}25%{transform:translate(-50%,-50%) scale(1) rotate(0)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.6);filter:blur(6px)}}
 #gt{font-size:52px;font-weight:900;margin-bottom:12px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1)}
-#gt.lose{background:linear-gradient(180deg,#ff8787,#c92a2a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 20px rgba(201,42,42,.5))}
-#gt.win{background:linear-gradient(180deg,#ffe066,#f59f00);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 20px rgba(245,159,0,.5))}
-
-/* ═══════════════════════════════════════════════════════════════
-   NOTIFICATIONS
-   ═══════════════════════════════════════════════════════════════ */
+#gt.lose{background:linear-gradient(180deg,#ff8787,#c92a2a);-webkit-background-clip:text;background-clip:text;color:transparent}
+#gt.win{background:linear-gradient(180deg,#ffe066,#f59f00);-webkit-background-clip:text;background-clip:text;color:transparent}
 .nt{position:absolute;top:70px;left:50%;transform:translateX(-50%);padding:8px 18px;border-radius:20px;background:rgba(255,212,59,.15);border:1px solid var(--gold);color:var(--gold);font-weight:600;font-size:13px;pointer-events:none;opacity:0;animation:na 1.8s ease-out;z-index:100;backdrop-filter:blur(8px)}
 .nt.err{background:rgba(255,100,100,.15);border-color:var(--dgr);color:var(--dgr)}
 .nt.ok{background:rgba(81,207,102,.15);border-color:var(--ok);color:var(--ok)}
 .nt.gm{background:rgba(192,132,252,.15);border-color:var(--gem);color:var(--gem)}
 @keyframes na{0%{opacity:0;transform:translateX(-50%) translateY(-10px) scale(.9)}15%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}85%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-10px) scale(.95)}}
-
 .sp{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spA .8s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spA{to{transform:rotate(360deg)}}
-
-/* ═══════════════════════════════════════════════════════════════
-   WARNING BANNER (không có nút X nữa - tự động ẩn)
-   ═══════════════════════════════════════════════════════════════ */
 #sw{position:fixed;top:0;left:0;right:0;padding:10px 20px;background:linear-gradient(90deg,#ff922b,#f76707);color:#fff;font-size:13px;text-align:center;z-index:9999;transform:translateY(-100%);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
 #sw.show{transform:translateY(0)}
-
-/* ═══════════════════════════════════════════════════════════════
-   MOBILE PLACE CONFIRM
-   ═══════════════════════════════════════════════════════════════ */
 #pc{position:fixed;z-index:500;display:flex;gap:8px;pointer-events:none;transform:translate(-50%,-100%);animation:pcPop .3s cubic-bezier(.34,1.56,.64,1)}
 #pc.hidden{display:none!important}
 @keyframes pcPop{from{transform:translate(-50%,-100%) scale(.7);opacity:0}to{transform:translate(-50%,-100%) scale(1);opacity:1}}
@@ -241,10 +161,6 @@ button{touch-action:manipulation}
 #pc button:active{transform:scale(.94)}
 #pcb{padding:16px 24px;border-radius:28px;background:linear-gradient(180deg,#51cf66,#2f9e44);color:#fff;font-size:16px;box-shadow:0 8px 24px rgba(47,158,68,.7)}
 #pcx{padding:16px 18px;border-radius:28px;background:rgba(220,53,69,.95);color:#fff;font-size:16px}
-
-/* ═══════════════════════════════════════════════════════════════
-   SHOP MODAL
-   ═══════════════════════════════════════════════════════════════ */
 #shModal .sb{width:min(960px,96vw);max-height:90vh;padding:22px;border-radius:20px;background:var(--card);border:1px solid var(--bd2);box-shadow:0 30px 80px rgba(0,0,0,.9);display:flex;flex-direction:column;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
 .shh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
 .sht{font-size:24px;font-weight:900;background:linear-gradient(180deg,var(--gem),var(--accl));-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -255,15 +171,9 @@ button{touch-action:manipulation}
 .shtabs::-webkit-scrollbar{display:none}
 .shtab{flex:1;min-width:100px;padding:11px;border-radius:9px;cursor:pointer;font-size:12px;font-weight:700;color:var(--dim);background:transparent;border:none;display:flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;transition:all .25s}
 .shtab.on{background:var(--card);color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,.3);transform:scale(1.05)}
-.shtab:hover:not(.on){color:var(--mid)}
-.shtab:active{transform:scale(.96)}
 .shc{flex:1;overflow-y:auto;padding-right:6px}
 .shc::-webkit-scrollbar{width:8px}
 .shc::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
-
-/* ═══════════════════════════════════════════════════════════════
-   GACHA / TROOP CARDS / THEME
-   ═══════════════════════════════════════════════════════════════ */
 .gi2{text-align:center;padding:14px 16px;margin-bottom:14px;border-radius:12px;background:linear-gradient(135deg,rgba(192,132,252,.1),rgba(77,171,247,.1));border:1px solid rgba(192,132,252,.3)}
 .git{font-size:16px;font-weight:800;color:var(--gem);margin-bottom:6px}
 .gid{font-size:12px;color:var(--mid);line-height:1.5}
@@ -275,11 +185,9 @@ button{touch-action:manipulation}
 .gb.s{background:linear-gradient(180deg,#7c3aed,#4c1d95);box-shadow:0 8px 24px rgba(124,58,237,.5)}
 .gb.m{background:linear-gradient(180deg,#f59f00,#d9480f);box-shadow:0 8px 24px rgba(217,72,15,.5)}
 .gb:hover:not(:disabled){transform:translateY(-4px) scale(1.05)}
-.gb:active:not(:disabled){transform:translateY(-1px) scale(1.01)}
 .gb:disabled{opacity:.5;cursor:not-allowed}
 .gb .c{font-size:12px;font-weight:700;opacity:.9;display:flex;align-items:center;gap:4px}
 .gb .dsc{font-size:10px;background:#51cf66;padding:2px 6px;border-radius:6px;font-weight:800}
-
 .skg{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px}
 .skc{aspect-ratio:1;border-radius:12px;padding:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;border:2px solid;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
 .skc.common{border-color:#868e96;background:linear-gradient(180deg,rgba(134,142,150,.15),rgba(134,142,150,.05))}
@@ -287,24 +195,18 @@ button{touch-action:manipulation}
 .skc.epic{border-color:#c084fc;background:linear-gradient(180deg,rgba(192,132,252,.15),rgba(192,132,252,.05))}
 .skc.legendary{border-color:#ffd43b;background:linear-gradient(180deg,rgba(255,212,59,.15),rgba(255,212,59,.05));box-shadow:0 0 20px rgba(255,212,59,.3)}
 .skc.mythic{border-color:#fff;background:linear-gradient(135deg,rgba(255,212,59,.2),rgba(192,132,252,.2),rgba(77,171,247,.2));box-shadow:0 0 24px rgba(255,212,59,.6);animation:mythicGlow 3s ease-in-out infinite}
-@keyframes mythicGlow{0%,100%{box-shadow:0 0 20px rgba(255,212,59,.5)}50%{box-shadow:0 0 32px rgba(255,212,59,.9),0 0 60px rgba(192,132,252,.5)}}
+@keyframes mythicGlow{0%,100%{box-shadow:0 0 20px rgba(255,212,59,.5)}50%{box-shadow:0 0 32px rgba(255,212,59,.9)}}
 .skc.locked{opacity:.35;filter:grayscale(1)}
 .skc.equipped{border-color:var(--ok);box-shadow:0 0 20px rgba(81,207,102,.5);animation:none}
 .skc.equipped::after{content:'✓';position:absolute;bottom:2px;left:0;right:0;font-size:10px;font-weight:900;color:var(--ok);text-align:center}
 .skc.owned{cursor:pointer}
 .skc.owned:hover{transform:translateY(-5px) scale(1.06)}
-.skc.owned:active{transform:translateY(-2px) scale(1.02)}
 .ski{font-size:30px;margin-bottom:3px}
 .skn{font-size:9px;font-weight:700;text-align:center;line-height:1.1;color:var(--txt)}
 .skr{font-size:8px;font-weight:800;letter-spacing:.5px;margin-top:1px}
-.skc.common .skr{color:#adb5bd}
-.skc.rare .skr{color:#74c0fc}
-.skc.epic .skr{color:#c084fc}
-.skc.legendary .skr{color:#ffd43b}
-.skc.mythic .skr{color:#fff;text-shadow:0 0 8px #ffd43b}
-
+.skc.common .skr{color:#adb5bd}.skc.rare .skr{color:#74c0fc}.skc.epic .skr{color:#c084fc}.skc.legendary .skr{color:#ffd43b}.skc.mythic .skr{color:#fff;text-shadow:0 0 8px #ffd43b}
 .tsg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
-.ptc{padding:16px;border-radius:14px;background:linear-gradient(180deg,#2a1a4a,#1a0f30);border:2px solid #c084fc;box-shadow:0 8px 24px rgba(124,58,237,.3);transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.ptc{padding:16px;border-radius:14px;background:linear-gradient(180deg,#2a1a4a,#1a0f30);border:2px solid #c084fc;box-shadow:0 8px 24px rgba(124,58,237,.3);transition:all .3s}
 .ptc:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(124,58,237,.5)}
 .ptc.owned{border-color:var(--ok);background:linear-gradient(180deg,#1a3a1a,#0f2410)}
 .pth{display:flex;align-items:center;gap:12px;margin-bottom:10px}
@@ -315,55 +217,33 @@ button{touch-action:manipulation}
 .ptd{font-size:11px;color:#c5cae9;line-height:1.5;margin-bottom:12px;font-style:italic}
 .pts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .ptst{font-size:10px;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.1);color:#e8eaf6;font-weight:600}
-.ptb{width:100%;padding:10px;border-radius:10px;border:none;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;transition:transform .2s}
+.ptb{width:100%;padding:10px;border-radius:10px;border:none;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
 .ptb.buy{background:linear-gradient(180deg,#c084fc,#7c3aed);color:#fff;box-shadow:0 4px 16px rgba(124,58,237,.5)}
-.ptb.buy:hover:not(:disabled){transform:translateY(-2px)}
 .ptb.buy:disabled{opacity:.5;cursor:not-allowed}
 .ptb.ow{background:linear-gradient(180deg,#51cf66,#2f9e44);color:#fff;cursor:default}
-
-/* ═══════════════════════════════════════════════════════════════
-   GACHA RESULT
-   ═══════════════════════════════════════════════════════════════ */
 #grModal .grb{width:min(800px,94vw);max-height:90vh;padding:30px;border-radius:24px;background:linear-gradient(180deg,#1a0f30,#0a0518);border:2px solid var(--gem);box-shadow:0 30px 80px rgba(124,58,237,.5);display:flex;flex-direction:column;align-items:center;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);overflow-y:auto}
 .grt{font-size:28px;font-weight:900;background:linear-gradient(180deg,#fff,var(--gem));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px;letter-spacing:2px}
 .grs{color:var(--dim);font-size:12px;letter-spacing:2px;margin-bottom:20px}
 .grg{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;width:100%;margin-bottom:20px}
 .grc{padding:16px 10px;border-radius:14px;text-align:center;border:2px solid;display:flex;flex-direction:column;align-items:center;position:relative;animation:cardReveal .65s cubic-bezier(.34,1.56,.64,1) backwards}
-.grc:nth-child(1){animation-delay:.05s}
-.grc:nth-child(2){animation-delay:.1s}
-.grc:nth-child(3){animation-delay:.15s}
-.grc:nth-child(4){animation-delay:.2s}
-.grc:nth-child(5){animation-delay:.25s}
-.grc:nth-child(6){animation-delay:.3s}
-.grc:nth-child(7){animation-delay:.35s}
-.grc:nth-child(8){animation-delay:.4s}
-.grc:nth-child(9){animation-delay:.45s}
-.grc:nth-child(10){animation-delay:.5s}
+.grc:nth-child(1){animation-delay:.05s}.grc:nth-child(2){animation-delay:.1s}.grc:nth-child(3){animation-delay:.15s}.grc:nth-child(4){animation-delay:.2s}.grc:nth-child(5){animation-delay:.25s}.grc:nth-child(6){animation-delay:.3s}.grc:nth-child(7){animation-delay:.35s}.grc:nth-child(8){animation-delay:.4s}.grc:nth-child(9){animation-delay:.45s}.grc:nth-child(10){animation-delay:.5s}
 @keyframes cardReveal{from{opacity:0;transform:scale(.4) rotate(-15deg) translateY(30px)}to{opacity:1;transform:scale(1) rotate(0) translateY(0)}}
 .grc.common{border-color:#868e96;background:radial-gradient(circle,rgba(134,142,150,.25),rgba(134,142,150,.05))}
 .grc.rare{border-color:#4dabf7;background:radial-gradient(circle,rgba(77,171,247,.25),rgba(77,171,247,.05));box-shadow:0 0 20px rgba(77,171,247,.4)}
 .grc.epic{border-color:#c084fc;background:radial-gradient(circle,rgba(192,132,252,.3),rgba(192,132,252,.05));box-shadow:0 0 24px rgba(192,132,252,.5)}
 .grc.legendary{border-color:#ffd43b;background:radial-gradient(circle,rgba(255,212,59,.35),rgba(255,212,59,.05));box-shadow:0 0 32px rgba(255,212,59,.7)}
 .grc.mythic{border-color:#fff;background:radial-gradient(circle,rgba(255,212,59,.4),rgba(192,132,252,.3),rgba(77,171,247,.15));box-shadow:0 0 40px rgba(255,212,59,.9)}
-.gri{font-size:44px;margin-bottom:6px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6))}
+.gri{font-size:44px;margin-bottom:6px}
 .grn{font-size:13px;font-weight:800;margin-bottom:2px;color:#fff}
 .grr{font-size:10px;font-weight:800;letter-spacing:.5px}
-.grc.common .grr{color:#adb5bd}
-.grc.rare .grr{color:#74c0fc}
-.grc.epic .grr{color:#c084fc}
-.grc.legendary .grr{color:#ffd43b}
-.grc.mythic .grr{color:#fff;text-shadow:0 0 8px #ffd43b}
+.grc.common .grr{color:#adb5bd}.grc.rare .grr{color:#74c0fc}.grc.epic .grr{color:#c084fc}.grc.legendary .grr{color:#ffd43b}.grc.mythic .grr{color:#fff;text-shadow:0 0 8px #ffd43b}
 .gnb{position:absolute;top:-8px;right:-4px;padding:3px 8px;border-radius:8px;background:linear-gradient(180deg,#51cf66,#2f9e44);color:#fff;font-size:9px;font-weight:900;box-shadow:0 2px 8px rgba(47,158,68,.6);transform:rotate(12deg)}
 .gra{display:flex;gap:10px}
-
-/* ═══════════════════════════════════════════════════════════════
-   THEME MODAL
-   ═══════════════════════════════════════════════════════════════ */
 #themeModal .tmb{width:min(560px,94vw);padding:24px;border-radius:20px;background:var(--card);border:1px solid var(--bd2);box-shadow:0 30px 80px rgba(0,0,0,.9);display:flex;flex-direction:column;animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
 .tm-title{font-size:22px;font-weight:900;letter-spacing:2px;background:linear-gradient(180deg,var(--accl),var(--accd));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px;text-align:center}
 .tm-sub{font-size:11px;color:var(--dim);letter-spacing:1px;text-align:center;margin-bottom:18px}
 .tm-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:18px}
-.tm-card{padding:14px;border-radius:14px;cursor:pointer;border:2px solid var(--bd);background:var(--card);position:relative;overflow:hidden;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.tm-card{padding:14px;border-radius:14px;cursor:pointer;border:2px solid var(--bd);background:var(--card);position:relative;overflow:hidden;transition:all .3s}
 .tm-card:hover{transform:translateY(-3px);border-color:var(--accl);box-shadow:0 12px 28px rgba(0,0,0,.4)}
 .tm-card.active{border-color:var(--gold);box-shadow:0 0 24px rgba(255,212,59,.5)}
 .tm-card.active::after{content:'✓';position:absolute;top:6px;right:8px;width:22px;height:22px;border-radius:50%;background:var(--gold);color:#1a2540;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px}
@@ -376,40 +256,23 @@ button{touch-action:manipulation}
 .tm-desc{font-size:10px;color:var(--dim);text-align:center;font-style:italic}
 .tm-lock-desc{color:var(--gold)!important;font-style:normal!important;font-weight:700;font-size:10px;line-height:1.3;margin-top:4px}
 .tm-lock-badge{position:absolute;top:6px;right:6px;padding:2px 6px;border-radius:8px;background:rgba(0,0,0,.5);color:var(--gold);font-size:9px;font-weight:800}
-.tm-close{padding:12px 24px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--accl),var(--accd));color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;transition:transform .2s}
-.tm-close:hover{transform:translateY(-1px)}
-
-/* ═══════════════════════════════════════════════════════════════
-   THEME UNLOCK
-   ═══════════════════════════════════════════════════════════════ */
+.tm-close{padding:12px 24px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--accl),var(--accd));color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit}
 @keyframes themeUnlockPop{0%{transform:translate(-50%,-50%) scale(.4);opacity:0}15%{transform:translate(-50%,-50%) scale(1.12);opacity:1}25%{transform:translate(-50%,-50%) scale(1)}78%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(-50%,-50%) scale(1.35);opacity:0}}
 @keyframes themeUnlockRing{0%{transform:translate(-50%,-50%) scale(.3);opacity:1}100%{transform:translate(-50%,-50%) scale(2.5);opacity:0}}
 .theme-unlock-pop{position:fixed;top:50%;left:50%;padding:22px 40px;border-radius:22px;text-align:center;color:#fff;font-weight:900;font-family:inherit;z-index:99999;pointer-events:none;animation:themeUnlockPop 3s ease-out forwards}
 .theme-unlock-ring{position:fixed;top:50%;left:50%;width:180px;height:180px;border-radius:50%;border:4px solid currentColor;pointer-events:none;z-index:99998;animation:themeUnlockRing 1.2s ease-out forwards}
-
-/* ═══════════════════════════════════════════════════════════════
-   GACHA SPIN ANIMATION
-   ═══════════════════════════════════════════════════════════════ */
 #spinModal{background:radial-gradient(circle at center,rgba(20,0,40,.96),rgba(5,0,15,.99))}
 .spin-wrap{display:flex;flex-direction:column;align-items:center;gap:20px}
 .spin-title{font-size:26px;font-weight:900;letter-spacing:4px;background:linear-gradient(90deg,#c084fc,#4dabf7,#ffd43b,#c084fc);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:spinTitle 2s linear infinite}
 @keyframes spinTitle{0%{background-position:0% 50%}100%{background-position:300% 50%}}
 .spin-cards{display:flex;gap:14px;perspective:1000px}
 .spin-card{width:80px;height:110px;border-radius:12px;background:linear-gradient(135deg,#4c1d95,#7c3aed,#c084fc);border:3px solid #c084fc;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:#fff;box-shadow:0 0 30px rgba(192,132,252,.8);animation:spinCardFlip .65s ease-in-out infinite}
-.spin-card:nth-child(1){animation-delay:0s}
-.spin-card:nth-child(2){animation-delay:.1s}
-.spin-card:nth-child(3){animation-delay:.2s}
-.spin-card:nth-child(4){animation-delay:.3s}
-.spin-card:nth-child(5){animation-delay:.4s}
+.spin-card:nth-child(2){animation-delay:.1s}.spin-card:nth-child(3){animation-delay:.2s}.spin-card:nth-child(4){animation-delay:.3s}.spin-card:nth-child(5){animation-delay:.4s}
 @keyframes spinCardFlip{0%,100%{transform:rotateY(0) scale(1);filter:brightness(1)}50%{transform:rotateY(180deg) scale(1.12);filter:brightness(1.9)}}
 .spin-hint{font-size:14px;color:#a888cc;letter-spacing:2px;animation:pulse 1.2s ease-in-out infinite}
 .spin-burst{position:fixed;width:20px;height:20px;border-radius:50%;pointer-events:none;z-index:99999}
 .gacha-flash{position:fixed;inset:0;background:#fff;z-index:99998;pointer-events:none;animation:gachaFlash .45s ease-out forwards}
 @keyframes gachaFlash{0%{opacity:.9}100%{opacity:0}}
-
-/* ═══════════════════════════════════════════════════════════════
-   TROOP SKINS UI
-   ═══════════════════════════════════════════════════════════════ */
 .troop-sec{margin-bottom:20px}
 .troop-header{display:flex;align-items:center;gap:10px;padding:8px 12px;background:linear-gradient(90deg,rgba(192,132,252,.15),transparent);border-left:3px solid var(--gem);border-radius:8px;margin-bottom:10px}
 .troop-header .th-name{font-size:15px;font-weight:800;color:var(--txt)}
@@ -417,40 +280,109 @@ button{touch-action:manipulation}
 .troop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px}
 .troop-card{aspect-ratio:1;border-radius:14px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid;cursor:pointer;position:relative;overflow:hidden;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
 .troop-card:hover{transform:translateY(-5px) scale(1.06)}
-.troop-card:active{transform:translateY(-2px) scale(1.02)}
 .troop-card.common{border-color:#868e96;background:linear-gradient(180deg,rgba(134,142,150,.2),rgba(134,142,150,.05))}
 .troop-card.rare{border-color:#4dabf7;background:linear-gradient(180deg,rgba(77,171,247,.2),rgba(77,171,247,.05))}
 .troop-card.epic{border-color:#c084fc;background:linear-gradient(180deg,rgba(192,132,252,.2),rgba(192,132,252,.05))}
 .troop-card.legendary{border-color:#ffd43b;background:linear-gradient(180deg,rgba(255,212,59,.2),rgba(255,212,59,.05));box-shadow:0 0 16px rgba(255,212,59,.4)}
-.troop-card.mythic{border-color:#fff;background:linear-gradient(135deg,rgba(255,212,59,.25),rgba(192,132,252,.25),rgba(77,171,247,.15));box-shadow:0 0 24px rgba(255,212,59,.6);animation:mythicGlow 3s ease-in-out infinite}
+.troop-card.mythic{border-color:#fff;background:linear-gradient(135deg,rgba(255,212,59,.25),rgba(192,132,252,.25),rgba(77,171,247,.15));box-shadow:0 0 24px rgba(255,212,59,.6)}
 .troop-card.locked{opacity:.35;filter:grayscale(1);cursor:not-allowed}
 .troop-card.equipped{border-color:var(--ok);box-shadow:0 0 20px rgba(81,207,102,.6)}
 .troop-card.equipped::after{content:'✓ ĐANG DÙNG';position:absolute;bottom:3px;left:0;right:0;font-size:7px;font-weight:900;color:var(--ok);text-align:center;letter-spacing:.5px}
-.troop-icon{font-size:34px;margin-bottom:2px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.troop-icon{font-size:34px;margin-bottom:2px}
 .troop-name{font-size:9px;font-weight:700;color:var(--txt);text-align:center;line-height:1.1}
 .troop-rarity{font-size:7px;font-weight:800;letter-spacing:.3px;margin-top:1px}
-.troop-card.common .troop-rarity{color:#adb5bd}
-.troop-card.rare .troop-rarity{color:#74c0fc}
-.troop-card.epic .troop-rarity{color:#c084fc}
-.troop-card.legendary .troop-rarity{color:#ffd43b}
-.troop-card.mythic .troop-rarity{color:#fff;text-shadow:0 0 6px #ffd43b}
+.troop-card.common .troop-rarity{color:#adb5bd}.troop-card.rare .troop-rarity{color:#74c0fc}.troop-card.epic .troop-rarity{color:#c084fc}.troop-card.legendary .troop-rarity{color:#ffd43b}.troop-card.mythic .troop-rarity{color:#fff;text-shadow:0 0 6px #ffd43b}
 .skill-badge{position:absolute;top:4px;left:4px;font-size:12px;filter:drop-shadow(0 0 4px currentColor)}
 
-/* ═══════════════════════════════════════════════════════════════
-   📱 MOBILE OPTIMIZATION (comprehensive)
-   ═══════════════════════════════════════════════════════════════ */
+/* V14 SYSTEMS */
+#questModal,#achModal,#statsModal,#streakModal{z-index:58}
+.qmb,.amb,.smb,.stkb{width:min(640px,94vw);max-height:90vh;padding:22px;border-radius:20px;background:var(--card);border:1px solid var(--bd2);box-shadow:0 30px 80px rgba(0,0,0,.9);display:flex;flex-direction:column;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);overflow:hidden}
+.stkb{width:min(600px,94vw);align-items:center}
+.qmh,.amh,.smh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px}
+.qmt,.amt,.smt{font-size:22px;font-weight:900;background:linear-gradient(180deg,var(--gold),var(--accl));-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:1px}
+.qm-sub{font-size:12px;color:var(--dim);text-align:center;margin-bottom:14px}
+.qm-prog{padding:12px 14px;margin-bottom:14px;background:linear-gradient(135deg,rgba(192,132,252,.1),rgba(77,171,247,.1));border:1px solid rgba(192,132,252,.3);border-radius:12px}
+.qm-prog-text{font-size:12px;color:var(--mid);margin-bottom:6px;display:flex;justify-content:space-between}
+.qm-prog-text b{color:var(--gold);font-weight:800}
+.qm-prog-bar{height:8px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.qm-prog-fill{height:100%;background:linear-gradient(90deg,var(--gem),var(--gold));width:0%;transition:width .6s cubic-bezier(.34,1.56,.64,1);box-shadow:0 0 12px var(--gem)}
+.qm-list,.am-list,.sm-content{flex:1;overflow-y:auto;padding-right:6px;display:flex;flex-direction:column;gap:10px}
+.qm-list::-webkit-scrollbar,.am-list::-webkit-scrollbar,.sm-content::-webkit-scrollbar{width:8px}
+.qm-list::-webkit-scrollbar-thumb,.am-list::-webkit-scrollbar-thumb,.sm-content::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
+.qmc,.amc{padding:12px 14px;border-radius:14px;background:linear-gradient(180deg,var(--card2),var(--card));border:2px solid var(--bd);display:flex;gap:12px;align-items:center;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.qmc.done{border-color:var(--ok);background:linear-gradient(180deg,rgba(81,207,102,.15),rgba(81,207,102,.05))}
+.qmc.claimed{opacity:.5;border-style:dashed}
+.qmc-icon{width:44px;height:44px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;background:radial-gradient(circle,var(--acc),var(--accd));box-shadow:inset 0 0 15px rgba(0,0,0,.5)}
+.qmc-body{flex:1;min-width:0}
+.qmc-title{font-size:13px;font-weight:800;margin-bottom:3px;color:var(--txt)}
+.qmc-desc{font-size:11px;color:var(--dim);margin-bottom:6px}
+.qmc-prog{font-size:11px;color:var(--mid);display:flex;align-items:center;gap:8px}
+.qmc-prog-bar{flex:1;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;max-width:120px}
+.qmc-prog-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--accl));width:0%;transition:width .5s}
+.qmc-reward{font-size:12px;font-weight:800;color:var(--gold);white-space:nowrap}
+.qmc-btn{padding:10px 14px;border-radius:10px;border:none;font-weight:800;font-size:12px;cursor:pointer;font-family:inherit;min-width:90px;min-height:40px;transition:all .2s}
+.qmc-btn.claim{background:linear-gradient(180deg,#51cf66,#2f9e44);color:#fff;box-shadow:0 4px 12px rgba(47,158,68,.5);animation:pulse 2s ease-in-out infinite}
+.qmc-btn.locked{background:var(--bg2);color:var(--dim);cursor:not-allowed}
+.qmc-btn.claimed{background:transparent;color:var(--ok);border:1px solid var(--ok)}
+.am-stats{font-size:14px;color:var(--mid);font-weight:800}
+.am-stats b{color:var(--gold);font-size:18px}
+.am-tabs{display:flex;gap:6px;margin-bottom:12px;padding:4px;background:var(--bg2);border-radius:10px;overflow-x:auto;scrollbar-width:none}
+.am-tabs::-webkit-scrollbar{display:none}
+.am-tab{flex:1;min-width:90px;padding:8px 12px;border-radius:8px;border:none;background:transparent;color:var(--dim);font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s}
+.am-tab.on{background:var(--card);color:var(--txt);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.amc.locked{opacity:.55;filter:grayscale(.3)}
+.amc.unlocked{border-color:var(--gold);background:linear-gradient(180deg,rgba(255,212,59,.12),rgba(255,212,59,.03))}
+.amc-icon{width:48px;height:48px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;background:radial-gradient(circle,var(--gem),#4c1d95);box-shadow:inset 0 0 15px rgba(0,0,0,.5),0 0 12px rgba(192,132,252,.4)}
+.amc.locked .amc-icon{background:radial-gradient(circle,#2a3550,#1a2540);filter:grayscale(1)}
+.amc-body{flex:1;min-width:0}
+.amc-title{font-size:13px;font-weight:800;color:var(--txt);margin-bottom:3px}
+.amc-desc{font-size:11px;color:var(--dim);margin-bottom:4px;line-height:1.4}
+.amc-prog{font-size:10px;color:var(--mid)}
+.amc-prog b{color:var(--txt);font-weight:800}
+.amc-reward{font-size:12px;font-weight:800;color:var(--gold);white-space:nowrap;text-align:right}
+.sm-sec{margin-bottom:16px}
+.sm-title{font-size:12px;font-weight:800;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+.sm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px}
+.sm-stat{padding:12px;border-radius:12px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--bd);text-align:center}
+.sm-stat-icon{font-size:22px;margin-bottom:4px}
+.sm-stat-label{font-size:10px;color:var(--dim);font-weight:600;margin-bottom:4px}
+.sm-stat-value{font-size:18px;font-weight:900;color:var(--txt);font-variant-numeric:tabular-nums}
+.sm-stat-value.gold{color:var(--gold)}
+.sm-stat-value.gem{color:var(--gem)}
+.sm-stat-value.ok{color:var(--ok)}
+.stkt{font-size:26px;font-weight:900;background:linear-gradient(180deg,var(--gold),#f59f00);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:8px;letter-spacing:2px;text-align:center}
+.stks{font-size:12px;color:var(--dim);margin-bottom:20px;text-align:center}
+.stk-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%}
+.stk-day{padding:12px 6px;border-radius:12px;background:linear-gradient(180deg,var(--card2),var(--card));border:2px solid var(--bd);text-align:center;position:relative;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
+.stk-day.claimed{border-color:var(--ok);background:linear-gradient(180deg,rgba(81,207,102,.15),rgba(81,207,102,.05))}
+.stk-day.today{border-color:var(--gold);box-shadow:0 0 20px rgba(255,212,59,.5);animation:pulse 2s ease-in-out infinite}
+.stk-day.locked{opacity:.4}
+.stk-day-num{font-size:10px;color:var(--dim);font-weight:700;margin-bottom:4px}
+.stk-day-icon{font-size:22px;margin-bottom:4px}
+.stk-day-reward{font-size:11px;font-weight:800;color:var(--gold)}
+.stk-day.claimed::after{content:'✓';position:absolute;top:4px;right:6px;font-size:12px;font-weight:900;color:var(--ok)}
+.event-banner{position:absolute;top:60px;left:50%;transform:translateX(-50%);padding:8px 18px;border-radius:20px;background:linear-gradient(90deg,#ffd43b,#f59f00);color:#1a2540;font-weight:800;font-size:12px;box-shadow:0 8px 24px rgba(245,159,0,.6);z-index:6;display:flex;align-items:center;gap:8px;animation:eventPulse 2s ease-in-out infinite;pointer-events:none}
+@keyframes eventPulse{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.05)}}
+.event-banner.hidden{display:none}
+.event-icon{font-size:16px}
+.ach-toast{position:fixed;top:80px;right:16px;padding:14px 20px;border-radius:16px;background:linear-gradient(135deg,#ffd43b,#f59f00);color:#1a2540;box-shadow:0 15px 40px rgba(245,159,0,.6);z-index:99997;display:flex;align-items:center;gap:12px;animation:achSlide .5s cubic-bezier(.34,1.56,.64,1);max-width:340px;pointer-events:none}
+@keyframes achSlide{from{transform:translateX(400px)}to{transform:translateX(0)}}
+.ach-toast.out{animation:achOut .4s ease forwards}
+@keyframes achOut{to{transform:translateX(400px);opacity:0}}
+.ach-toast-icon{font-size:32px}
+.ach-toast-body{flex:1}
+.ach-toast-title{font-size:10px;font-weight:800;letter-spacing:1px;opacity:.8}
+.ach-toast-name{font-size:14px;font-weight:900;margin-top:2px}
+
 @media(max-width:900px),(pointer:coarse){
-  /* HUD compact */
-  #hud{height:48px;padding:0 10px;gap:6px}
+  #hud{height:48px;padding:0 8px;gap:5px}
   .hud-i{font-size:12px;gap:3px}
   .hud-ic{width:18px;height:18px;font-size:10px}
   .hud-user{display:none!important}
-  .btn{padding:10px 12px;font-size:12px;min-height:40px;border-radius:10px}
+  .btn{padding:10px 12px;font-size:12px;min-height:40px}
   .btn.ic{min-width:42px;padding:10px;min-height:42px}
   #quickLoginBtn{padding:8px 10px;font-size:11px}
-  
-  /* Shop cuộn ngang, tap to */
-  #shop{bottom:8px;left:8px;right:8px;transform:none;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:8px 12px;gap:6px;justify-content:flex-start;scrollbar-width:none;border-radius:16px}
+  #shop{bottom:6px;left:6px;right:6px;transform:none;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:8px 12px;gap:6px;justify-content:flex-start;scrollbar-width:none;border-radius:16px}
   #shop::-webkit-scrollbar{display:none}
   .tc{flex-shrink:0;scroll-snap-align:start;min-width:68px;width:68px;padding:8px 4px;border-radius:12px;min-height:90px}
   .t-ic{width:34px;height:34px;font-size:16px;margin-bottom:5px}
@@ -459,14 +391,10 @@ button{touch-action:manipulation}
   .hk{display:none}
   .tc:hover{transform:none}
   .tc:active{transform:scale(.94)}
-  
-  /* Tower info bottom sheet */
-  #towerInfo{bottom:100px;left:8px;right:8px;transform:none!important;flex-wrap:wrap;justify-content:center;padding:10px 12px;gap:8px 12px;border-radius:14px}
+  #towerInfo{bottom:100px;left:8px;right:8px;transform:none!important;flex-wrap:wrap;justify-content:center;padding:10px 12px;gap:8px 12px}
   #towerInfo.show{transform:none!important}
   #towerInfo .st{font-size:11px}
   #towerInfo .btn{padding:10px 14px;font-size:12px;min-height:40px}
-  
-  /* Menu compact */
   #mt{font-size:32px;letter-spacing:2px}
   #ms{font-size:11px;margin-bottom:16px}
   #ml{grid-template-columns:repeat(2,minmax(140px,1fr));gap:10px;margin-bottom:16px;max-height:60vh}
@@ -476,110 +404,64 @@ button{touch-action:manipulation}
   .md{font-size:9px}
   .mr{flex-direction:column;width:100%;gap:8px}
   .mr .btn{width:100%;padding:14px;font-size:14px;min-height:48px}
-  
-  /* Auth compact */
   .abox{width:92vw;max-width:400px;padding:24px 20px}
   .al{font-size:24px}
-  .af input{padding:14px 14px;font-size:16px;min-height:48px}
-  .ab{padding:14px;font-size:14px;min-height:48px}
-  .ag{padding:14px;font-size:13px;min-height:48px}
-  .au{padding:14px;min-height:48px}
-  
-  /* Tooltip top-center */
+  .af input{padding:14px;font-size:16px;min-height:48px}
+  .ab,.ag,.au{padding:14px;min-height:48px}
   #tooltip{position:fixed!important;left:50%!important;top:56px!important;transform:translateX(-50%) translateY(0)!important;max-width:92vw;min-width:0;width:auto;z-index:600}
   #tooltip:not(.show){display:none!important}
-  
-  /* Tutorial */
   .tb{font-size:13px;padding:12px 16px;max-width:260px;line-height:1.45}
   .ts{padding:12px 16px;font-size:13px;top:56px;min-height:44px}
-  .th{border-width:3px}
-  
-  /* Notifications */
   .nt{font-size:12px;padding:10px 16px;max-width:90vw;top:60px}
-  
-  /* Modals */
   #cModal .cb{padding:22px 20px;max-width:92vw}
   #cModal h2{font-size:17px}
   #cModal .cbt{flex-direction:column;gap:8px}
   #cModal .cbt .btn{width:100%;padding:14px;min-height:48px}
-  
-  /* Shop modal full-ish */
   #shModal .sb{padding:16px 12px;width:96vw;max-height:92vh}
   .sht{font-size:18px}
   .gd{padding:8px 14px;font-size:14px}
-  .shh{gap:8px}
-  .shtabs{padding:5px;gap:4px}
   .shtab{padding:11px 8px;font-size:11px;min-width:90px;min-height:44px}
-  
-  /* Card grids */
   .skg{grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
-  .ski{font-size:26px}
-  .skn{font-size:8px}
-  .skr{font-size:7px}
+  .ski{font-size:26px}.skn{font-size:8px}.skr{font-size:7px}
   .gb{padding:14px 16px;font-size:14px;min-width:0;flex:1;min-height:60px}
   .tsg{grid-template-columns:1fr}
   .ptc{padding:14px}
   .pti{width:44px;height:44px;font-size:22px}
-  .ptn{font-size:14px}
-  .ptd{font-size:11px}
-  .ptst{font-size:9px;padding:2px 6px}
   .ptb{padding:12px;font-size:13px;min-height:44px}
-  
-  /* Gacha results */
   .grg{grid-template-columns:repeat(2,1fr);gap:10px}
-  .gri{font-size:34px}
-  .grn{font-size:11px}
-  .grt{font-size:22px}
+  .gri{font-size:34px}.grn{font-size:11px}.grt{font-size:22px}
   .gra{flex-direction:column;width:100%;gap:8px}
   .gra .btn{width:100%;padding:14px;min-height:48px}
-  
-  /* Theme modal */
   .tm-grid{grid-template-columns:repeat(2,1fr);gap:8px}
   .tm-card{padding:12px}
   .tm-preview{height:48px}
-  .tm-preview span{width:20px;height:20px}
   .tm-name{font-size:12px}
-  .tm-desc{font-size:9px}
-  .tm-title{font-size:18px}
-  .tm-close{padding:14px 24px;min-height:48px;font-size:14px}
-  
-  /* Spin animation */
+  .tm-close{padding:14px 24px;min-height:48px}
   .spin-card{width:62px;height:86px;font-size:28px;border-width:2px}
   .spin-title{font-size:22px}
-  .spin-hint{font-size:13px}
-  
-  /* Troop skins */
   .troop-grid{grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
   .troop-icon{font-size:28px}
   .troop-name{font-size:8px}
   .troop-rarity{font-size:7px}
-  .troop-header{padding:10px 12px}
-  .troop-header .th-name{font-size:13px}
-  .troop-header .th-count{font-size:10px}
-  
-  /* Mobile place confirm */
   #pcb{padding:16px 26px;font-size:16px;min-height:52px}
   #pcx{padding:16px 20px;font-size:16px;min-height:52px}
-  
-  /* Disable hover effects on mobile */
-  .mc:hover,.tc:hover,.ptc:hover,.troop-card:hover,.skc.owned:hover,.tm-card:hover{transform:none}
-  .mc:active,.tc:active,.ptc:active,.troop-card:active,.skc.owned:active{transform:scale(.96)}
+  .qmb,.amb,.smb,.stkb{padding:16px 12px;width:96vw;max-height:92vh}
+  .qmt,.amt,.smt{font-size:16px}
+  .qmc,.amc{padding:10px 12px;gap:10px}
+  .qmc-icon,.amc-icon{width:38px;height:38px;font-size:18px}
+  .qmc-title,.amc-title{font-size:12px}
+  .qmc-desc,.amc-desc{font-size:10px}
+  .qmc-btn{padding:10px 12px;font-size:11px;min-height:44px}
+  .sm-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .sm-stat-value{font-size:15px}
+  .stk-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .event-banner{top:52px;font-size:11px;padding:6px 14px}
+  .ach-toast{max-width:calc(100vw - 32px);padding:12px 16px}
+  .ach-toast-icon{font-size:26px}
 }
-
-/* ═══════════════════════════════════════════════════════════════
-   PORTRAIT WARNING
-   ═══════════════════════════════════════════════════════════════ */
 @media(max-width:900px) and (orientation:portrait){
   body::before{content:'📱 Hãy xoay ngang màn hình để chơi';position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--txt);font-size:20px;font-weight:700;text-align:center;padding:40px;z-index:99999;line-height:1.5}
   #wrap{visibility:hidden}
-}
-
-/* Very small screens */
-@media(max-width:400px){
-  #mt{font-size:26px}
-  .hud-i{font-size:11px}
-  .hud-ic{width:16px;height:16px}
-  .btn{padding:8px 10px;font-size:11px}
 }
 </style>
 </head>
@@ -589,6 +471,11 @@ button{touch-action:manipulation}
 <div id="wrap">
 <canvas id="game"></canvas>
 
+<div id="eventBanner" class="event-banner hidden">
+<span class="event-icon">🎉</span>
+<span class="event-text" id="eventText">Sự kiện cuối tuần!</span>
+</div>
+
 <div id="hud">
 <div class="hud-i" id="hudGold"><div class="hud-ic gold-i">💰</div><span id="goldVal">150</span></div>
 <div class="hud-i" id="hudHp"><div class="hud-ic hp-i">❤️</div><span id="hpVal">20</span></div>
@@ -597,6 +484,9 @@ button{touch-action:manipulation}
 <div class="spacer"></div>
 <button class="btn lp" id="quickLoginBtn" style="display:none;">🔐</button>
 <div class="hud-user" id="hudUser">—</div>
+<button class="btn ic" id="questBtn" title="Nhiệm vụ">🎯</button>
+<button class="btn ic" id="achieveBtn" title="Thành tựu">🏅</button>
+<button class="btn ic" id="statsBtn" title="Thống kê">📊</button>
 <button class="btn ic" id="themeBtn" title="Giao diện">🎨</button>
 <button class="btn ic" id="shakeBtn" title="Rung">📳</button>
 <button class="btn ic" id="soundBtn" title="Âm thanh">🔊</button>
@@ -630,8 +520,8 @@ button{touch-action:manipulation}
 <div class="al">TOWER DEFENSE</div>
 <div class="as">BẢO VỆ VƯƠNG QUỐC KHỎI BÓNG TỐI</div>
 <div class="at"><button class="atb on" data-tab="login" data-f="main">Đăng nhập</button><button class="atb" data-tab="register" data-f="main">Đăng ký</button></div>
-<div class="af"><label>Email</label><input type="email" id="aEmail" placeholder="you@example.com" autocomplete="email"></div>
-<div class="af"><label>Mật khẩu</label><input type="password" id="aPass" placeholder="Ít nhất 6 ký tự" autocomplete="current-password"></div>
+<div class="af"><label>Email</label><input type="email" id="aEmail" placeholder="you@example.com"></div>
+<div class="af"><label>Mật khẩu</label><input type="password" id="aPass" placeholder="Ít nhất 6 ký tự"></div>
 <div class="am" id="aMsg"></div>
 <button class="ab" id="aSub">Đăng nhập</button>
 <div class="ad">hoặc</div>
@@ -649,6 +539,11 @@ button{touch-action:manipulation}
 <div class="mr">
 <button class="btn gem" id="shopBtn">🛒 Shop</button>
 <button class="btn primary" id="playBtn">▶ CHƠI</button>
+</div>
+<div class="mr">
+<button class="btn" id="questBtnM">🎯 Nhiệm vụ</button>
+<button class="btn" id="achieveBtnM">🏅 Thành tựu</button>
+<button class="btn" id="statsBtnM">📊 Thống kê</button>
 </div>
 <div class="mr">
 <button class="btn ic" id="themeBtnM">🎨</button>
@@ -698,6 +593,57 @@ button{touch-action:manipulation}
 <div class="tm-sub">Mở khoá theme bằng cách chinh phục các map!</div>
 <div class="tm-grid" id="tmGrid"></div>
 <div style="display:flex;justify-content:center;"><button class="tm-close" id="tmClose">Đóng</button></div>
+</div>
+</div>
+
+<div id="questModal" class="modal hidden">
+<div class="qmb">
+<div class="qmh">
+<div class="qmt">🎯 NHIỆM VỤ HÀNG NGÀY</div>
+<button class="btn ic" id="qClose">✕</button>
+</div>
+<div class="qm-sub">Hoàn thành nhiệm vụ để nhận gem miễn phí! Reset lúc 00:00 mỗi ngày</div>
+<div class="qm-prog">
+<div class="qm-prog-text">Tiến độ: <b id="qmProgText">0/5</b></div>
+<div class="qm-prog-bar"><div class="qm-prog-fill" id="qmProgFill"></div></div>
+</div>
+<div class="qm-list" id="qmList"></div>
+</div>
+</div>
+
+<div id="achModal" class="modal hidden">
+<div class="amb">
+<div class="amh">
+<div class="amt">🏅 THÀNH TỰU</div>
+<div class="am-stats"><b id="amUnlocked">0</b>/<span id="amTotal">0</span></div>
+<button class="btn ic" id="aClose">✕</button>
+</div>
+<div class="am-tabs">
+<button class="am-tab on" data-cat="all">Tất cả</button>
+<button class="am-tab" data-cat="battle">⚔️ Trận đấu</button>
+<button class="am-tab" data-cat="collection">💎 Sưu tầm</button>
+<button class="am-tab" data-cat="progress">📈 Tiến trình</button>
+</div>
+<div class="am-list" id="amList"></div>
+</div>
+</div>
+
+<div id="statsModal" class="modal hidden">
+<div class="smb">
+<div class="smh">
+<div class="smt">📊 THỐNG KÊ CÁ NHÂN</div>
+<button class="btn ic" id="stClose">✕</button>
+</div>
+<div class="sm-content" id="stContent"></div>
+</div>
+</div>
+
+<div id="streakModal" class="modal hidden">
+<div class="stkb">
+<div class="stkt">🎁 ĐIỂM DANH 7 NGÀY</div>
+<div class="stks">Đăng nhập mỗi ngày để nhận quà!</div>
+<div class="stk-grid" id="stkGrid"></div>
+<button class="btn primary" id="stkClaim" style="margin-top:16px;padding:14px 40px;font-size:15px;">🎁 NHẬN QUÀ HÔM NAY</button>
 </div>
 </div>
 
@@ -809,9 +755,6 @@ const Theme={
   apply(){document.documentElement.setAttribute('data-theme',this.cur);}
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   SHAKE
-   ═══════════════════════════════════════════════════════════════ */
 const Shake={
   k:'td_shake',enabled:true,
   init(){const s=localStorage.getItem(this.k);if(s!==null) this.enabled=s==='1';this.apply();},
@@ -1031,15 +974,406 @@ const G={
   speed:1,lastTime:0,time:0,selType:null,selTower:null,
   mouse:{x:0,y:0,gx:0,gy:0},shake:{x:0,y:0,t:0,amount:0},
   occupied:new Set(),tut:{active:false,step:0,timer:null},
-  pendingSave:null,mobileCell:null,shopTab:'gacha',avail:{}
+  pendingSave:null,mobileCell:null,shopTab:'gacha',avail:{},
+  gameStartTime:null,hpLostThisGame:0
 };
 const META={
   gems:0,ownedSkins:[],equipped:null,ownedPremium:[],pity:0,totalPulls:0,
   unlockedThemes:['dark','light'],completedMaps:[],hasAnyWin:false,
-  ownedTroopSkins:{},equippedTroopSkins:{},troopPity:0,troopPulls:0
+  ownedTroopSkins:{},equippedTroopSkins:{},troopPity:0,troopPulls:0,
+  dailyQuests:{date:'',quests:[]},
+  loginStreak:{lastClaim:'',streak:0,claimed:[]},
+  achievements:{},
+  stats:{totalKills:0,totalGames:0,totalWins:0,totalPlaytime:0,totalGoldEarned:0,totalGemsEarned:0,highestWave:0,towerUsage:{},totalUpgrades:0,totalTowersBuilt:0,bossKills:0}
 };
 
 function metaKey(){ return currentUser ? `td_meta_${currentUser.uid}` : GK_META; }
+
+/* ═══════════════════════════════════════════════════════════════
+   🎯 DAILY QUESTS
+   ═══════════════════════════════════════════════════════════════ */
+const QUEST_POOL = [
+  {id:'win_1',      icon:'🏆', name:'Chiến thắng',       desc:'Thắng 1 map bất kỳ',           target:1,    reward:30, key:'wins'},
+  {id:'kill_50',    icon:'⚔️', name:'Diệt địch',         desc:'Diệt 50 kẻ địch',             target:50,   reward:25, key:'kills'},
+  {id:'kill_150',   icon:'💀', name:'Tàn sát',           desc:'Diệt 150 kẻ địch',            target:150,  reward:40, key:'kills'},
+  {id:'build_15',   icon:'🔨', name:'Xây dựng',          desc:'Xây 15 tháp',                 target:15,   reward:20, key:'built'},
+  {id:'upgrade_8',  icon:'⬆️', name:'Nâng cấp',          desc:'Nâng cấp tháp 8 lần',         target:8,    reward:25, key:'upgrades'},
+  {id:'play_3',     icon:'🎮', name:'Chăm chỉ',          desc:'Chơi 3 ván',                  target:3,    reward:20, key:'games'},
+  {id:'wave_15',    icon:'🌊', name:'Sóng gió',          desc:'Đạt đợt 15 trong 1 ván',      target:15,   reward:35, key:'maxWave'},
+  {id:'no_leak',    icon:'🛡️', name:'Bất khả chiến bại', desc:'Thắng 1 map không mất máu',   target:1,    reward:60, key:'noLeakWin'},
+  {id:'kill_boss',  icon:'👹', name:'Sát boss',          desc:'Diệt 1 boss',                 target:1,    reward:30, key:'bossKills'},
+  {id:'gacha_1',    icon:'🎰', name:'Vận may',           desc:'Quay gacha 1 lần',            target:1,    reward:15, key:'gachaPulls'}
+];
+
+function getTodayStr(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function generateDailyQuests(){
+  const today = getTodayStr();
+  if(META.dailyQuests.date === today && META.dailyQuests.quests.length > 0) return;
+  const shuffled = [...QUEST_POOL].sort(() => Math.random() - 0.5);
+  const picked = shuffled.slice(0, 5).map(q => ({
+    id: q.id, icon: q.icon, name: q.name, desc: q.desc,
+    target: q.target, reward: q.reward, key: q.key,
+    progress: 0, claimed: false
+  }));
+  META.dailyQuests = { date: today, quests: picked };
+  saveMeta();
+}
+
+function trackQuest(key, amount = 1){
+  if(!META.dailyQuests.quests) return;
+  let changed = false;
+  for(const q of META.dailyQuests.quests){
+    if(q.claimed) continue;
+    if(q.key === key){
+      q.progress = Math.min(q.target, q.progress + amount);
+      changed = true;
+    }
+  }
+  if(changed) saveMeta();
+}
+
+function setQuestMax(key, value){
+  if(!META.dailyQuests.quests) return;
+  let changed = false;
+  for(const q of META.dailyQuests.quests){
+    if(q.claimed) continue;
+    if(q.key === key && value > q.progress){
+      q.progress = Math.min(q.target, value);
+      changed = true;
+    }
+  }
+  if(changed) saveMeta();
+}
+
+function claimQuest(questId){
+  const q = META.dailyQuests.quests.find(x => x.id === questId);
+  if(!q || q.claimed || q.progress < q.target) return;
+  q.claimed = true;
+  META.gems += q.reward;
+  META.stats.totalGemsEarned = (META.stats.totalGemsEarned || 0) + q.reward;
+  saveMeta();
+  updateGemDisplay();
+  bumpHud('hudGem');
+  Sound.play('gem');
+  notify(`✅ +${q.reward}💎 từ nhiệm vụ!`, false, true);
+  renderQuestModal();
+}
+
+function renderQuestModal(){
+  generateDailyQuests();
+  const list = document.getElementById('qmList');
+  const quests = META.dailyQuests.quests;
+  const claimed = quests.filter(q => q.claimed).length;
+  document.getElementById('qmProgText').textContent = `${claimed}/5`;
+  document.getElementById('qmProgFill').style.width = (claimed/5*100) + '%';
+  list.innerHTML = '';
+  quests.forEach(q => {
+    const pct = q.progress / q.target * 100;
+    const done = q.progress >= q.target;
+    const stateClass = q.claimed ? 'claimed' : (done ? 'done' : '');
+    const btnClass = q.claimed ? 'claimed' : (done ? 'claim' : 'locked');
+    const btnText = q.claimed ? '✓ ĐÃ NHẬN' : (done ? '🎁 NHẬN' : 'Chưa xong');
+    const div = document.createElement('div');
+    div.className = `qmc ${stateClass}`;
+    div.innerHTML = `
+      <div class="qmc-icon">${q.icon}</div>
+      <div class="qmc-body">
+        <div class="qmc-title">${q.name}</div>
+        <div class="qmc-desc">${q.desc}</div>
+        <div class="qmc-prog">
+          <span>${q.progress}/${q.target}</span>
+          <div class="qmc-prog-bar"><div class="qmc-prog-fill" style="width:${pct}%"></div></div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div class="qmc-reward">+${q.reward}💎</div>
+        <button class="qmc-btn ${btnClass}" data-qid="${q.id}" ${(!done || q.claimed) ? 'disabled' : ''}>${btnText}</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+  list.querySelectorAll('[data-qid]').forEach(b => {
+    b.addEventListener('click', () => claimQuest(b.dataset.qid));
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   🎁 LOGIN STREAK
+   ═══════════════════════════════════════════════════════════════ */
+const STREAK_REWARDS = [
+  {day:1, icon:'💎', gems:50,  label:'50💎'},
+  {day:2, icon:'💎', gems:75,  label:'75💎'},
+  {day:3, icon:'💎', gems:100, label:'100💎'},
+  {day:4, icon:'💎', gems:150, label:'150💎'},
+  {day:5, icon:'💎', gems:200, label:'200💎'},
+  {day:6, icon:'💎', gems:300, label:'300💎'},
+  {day:7, icon:'🎁', gems:500, label:'500💎 +Gacha'}
+];
+
+function checkStreakReset(){
+  const today = getTodayStr();
+  const last = META.loginStreak.lastClaim;
+  if(!last) return;
+  const lastDate = new Date(last + 'T00:00:00');
+  const todayDate = new Date(today + 'T00:00:00');
+  const diffDays = Math.floor((todayDate - lastDate) / (1000*60*60*24));
+  if(diffDays > 1){
+    META.loginStreak.streak = 0;
+    META.loginStreak.claimed = [];
+  }
+  if(diffDays === 1 && META.loginStreak.streak >= 7){
+    META.loginStreak.streak = 0;
+    META.loginStreak.claimed = [];
+  }
+  saveMeta();
+}
+
+function canClaimStreak(){
+  checkStreakReset();
+  const today = getTodayStr();
+  return META.loginStreak.lastClaim !== today;
+}
+
+function claimStreak(){
+  if(!canClaimStreak()){ notify('Bạn đã nhận hôm nay rồi!'); return; }
+  const today = getTodayStr();
+  const nextDay = META.loginStreak.streak + 1;
+  const reward = STREAK_REWARDS[nextDay - 1];
+  if(!reward) return;
+  META.loginStreak.streak = nextDay;
+  META.loginStreak.lastClaim = today;
+  META.loginStreak.claimed.push(nextDay);
+  let totalGems = reward.gems;
+  if(reward.day === 7) totalGems += 50; // Free gacha bonus
+  META.gems += totalGems;
+  META.stats.totalGemsEarned = (META.stats.totalGemsEarned || 0) + totalGems;
+  saveMeta();
+  updateGemDisplay();
+  bumpHud('hudGem');
+  Sound.play('migrate');
+  notify(`🎁 Ngày ${nextDay}: +${totalGems}💎${reward.day===7?' + Free Gacha':''}`, false, true);
+  renderStreakModal();
+  checkAchievements();
+}
+
+function renderStreakModal(){
+  const grid = document.getElementById('stkGrid');
+  grid.innerHTML = '';
+  const canClaim = canClaimStreak();
+  for(let i = 0; i < 7; i++){
+    const reward = STREAK_REWARDS[i];
+    const dayNum = i + 1;
+    const claimed = META.loginStreak.claimed.includes(dayNum);
+    const isToday = canClaim && dayNum === META.loginStreak.streak + 1;
+    const locked = !claimed && !isToday;
+    let cls = 'stk-day';
+    if(claimed) cls += ' claimed';
+    else if(isToday) cls += ' today';
+    else if(locked) cls += ' locked';
+    const div = document.createElement('div');
+    div.className = cls;
+    div.innerHTML = `
+      <div class="stk-day-num">Ngày ${dayNum}</div>
+      <div class="stk-day-icon">${reward.icon}</div>
+      <div class="stk-day-reward">${reward.label}</div>
+    `;
+    grid.appendChild(div);
+  }
+  const btn = document.getElementById('stkClaim');
+  btn.disabled = !canClaim;
+  btn.textContent = canClaim ? '🎁 NHẬN QUÀ HÔM NAY' : '✓ ĐÃ NHẬN HÔM NAY';
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   📅 WEEKEND EVENTS
+   ═══════════════════════════════════════════════════════════════ */
+function isWeekend(){
+  const d = new Date().getDay();
+  return d === 0 || d === 6;
+}
+
+function updateEventBanner(){
+  const banner = document.getElementById('eventBanner');
+  const text = document.getElementById('eventText');
+  if(isWeekend()){
+    banner.classList.remove('hidden');
+    text.textContent = 'X2 GEM từ chiến thắng! (Cuối tuần)';
+  } else {
+    banner.classList.add('hidden');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   🏅 ACHIEVEMENTS
+   ═══════════════════════════════════════════════════════════════ */
+const ACHIEVEMENTS = [
+  {id:'first_win',   icon:'🏆', cat:'battle', name:'Chiến thắng đầu tiên', desc:'Thắng 1 map', target:1,    reward:50,  key:'totalWins'},
+  {id:'win_5',       icon:'🥈', cat:'battle', name:'Chiến binh tập sự',   desc:'Thắng 5 map', target:5,    reward:100, key:'totalWins'},
+  {id:'win_20',      icon:'🥇', cat:'battle', name:'Danh tướng',          desc:'Thắng 20 map', target:20,  reward:300, key:'totalWins'},
+  {id:'kill_100',    icon:'⚔️', cat:'battle', name:'Diệt địch I',         desc:'Diệt 100 địch', target:100, reward:50,  key:'totalKills'},
+  {id:'kill_1000',   icon:'🗡️', cat:'battle', name:'Diệt địch II',        desc:'Diệt 1000 địch', target:1000, reward:150, key:'totalKills'},
+  {id:'kill_10000',  icon:'💀', cat:'battle', name:'Tử thần',             desc:'Diệt 10000 địch', target:10000, reward:500, key:'totalKills'},
+  {id:'build_50',    icon:'🔨', cat:'battle', name:'Thợ xây',             desc:'Xây 50 tháp', target:50,  reward:75,  key:'totalTowersBuilt'},
+  {id:'build_200',   icon:'🏗️', cat:'battle', name:'Kiến trúc sư',        desc:'Xây 200 tháp', target:200, reward:200, key:'totalTowersBuilt'},
+  {id:'upgrade_100', icon:'⬆️', cat:'battle', name:'Nâng cấp thần tốc',   desc:'Nâng cấp 100 lần', target:100, reward:150, key:'totalUpgrades'},
+  {id:'wave_50',     icon:'🌊', cat:'battle', name:'Sóng gió',            desc:'Đạt đợt 50 (kỷ lục)', target:50, reward:200, key:'highestWave'},
+  {id:'skin_5',      icon:'✨', cat:'collection', name:'Nhà sưu tầm',      desc:'Sở hữu 5 skin', target:5,  reward:50,  key:'totalSkins'},
+  {id:'skin_15',     icon:'💫', cat:'collection', name:'Bộ sưu tập',       desc:'Sở hữu 15 skin', target:15, reward:200, key:'totalSkins'},
+  {id:'skin_30',     icon:'🌟', cat:'collection', name:'Bậc thầy skin',    desc:'Sở hữu 30 skin', target:30, reward:500, key:'totalSkins'},
+  {id:'gacha_10',    icon:'🎰', cat:'collection', name:'Con bạc',          desc:'Quay gacha 10 lần', target:10, reward:60,  key:'totalGacha'},
+  {id:'gacha_100',   icon:'🎲', cat:'collection', name:'Vua may mắn',      desc:'Quay gacha 100 lần', target:100, reward:400, key:'totalGacha'},
+  {id:'premium_1',   icon:'⚡', cat:'collection', name:'Nâng cấp cao cấp', desc:'Mua 1 tháp premium', target:1, reward:150, key:'totalPremium'},
+  {id:'premium_all', icon:'👑', cat:'collection', name:'Đại gia',          desc:'Mua tất cả tháp premium', target:4, reward:1000, key:'totalPremium'},
+  {id:'theme_all',   icon:'🎨', cat:'collection', name:'Nhà thiết kế',     desc:'Mở khoá tất cả theme', target:8, reward:300, key:'totalThemes'},
+  {id:'streak_3',    icon:'📅', cat:'progress', name:'Điểm danh 3 ngày',  desc:'Streak 3 ngày liên tiếp', target:3,  reward:50,  key:'maxStreak'},
+  {id:'streak_7',    icon:'🔥', cat:'progress', name:'Điểm danh 7 ngày',  desc:'Streak 7 ngày liên tiếp', target:7,  reward:200, key:'maxStreak'},
+  {id:'map_5',       icon:'🗺️', cat:'progress', name:'Nhà thám hiểm',     desc:'Thắng 5 map khác nhau', target:5,  reward:250, key:'mapsCompleted'},
+  {id:'map_9',       icon:'🌍', cat:'progress', name:'Chinh phục',        desc:'Thắng cả 9 map', target:9,  reward:800, key:'mapsCompleted'},
+  {id:'playtime_1h', icon:'⏱️', cat:'progress', name:'Nhập môn',          desc:'Chơi 1 giờ', target:3600, reward:100, key:'totalPlaytime'},
+  {id:'playtime_5h', icon:'⏰', cat:'progress', name:'Nghiện rồi!',       desc:'Chơi 5 giờ', target:18000, reward:500, key:'totalPlaytime'}
+];
+
+function getAchievementProgress(ach){
+  const s = META.stats || {};
+  switch(ach.key){
+    case 'totalWins': return s.totalWins || 0;
+    case 'totalKills': return s.totalKills || 0;
+    case 'totalTowersBuilt': return s.totalTowersBuilt || 0;
+    case 'totalUpgrades': return s.totalUpgrades || 0;
+    case 'highestWave': return s.highestWave || 0;
+    case 'totalSkins': return (META.ownedSkins?.length || 0) + Object.values(META.ownedTroopSkins || {}).reduce((a,b) => a + b.length, 0);
+    case 'totalGacha': return (META.totalPulls || 0) + (META.troopPulls || 0);
+    case 'totalPremium': return META.ownedPremium?.length || 0;
+    case 'totalThemes': return META.unlockedThemes?.length || 0;
+    case 'maxStreak': return META.loginStreak?.streak || 0;
+    case 'mapsCompleted': return META.completedMaps?.length || 0;
+    case 'totalPlaytime': return s.totalPlaytime || 0;
+    default: return 0;
+  }
+}
+
+function checkAchievements(){
+  let newlyUnlocked = [];
+  for(const ach of ACHIEVEMENTS){
+    if(META.achievements[ach.id]) continue;
+    const progress = getAchievementProgress(ach);
+    if(progress >= ach.target){
+      META.achievements[ach.id] = Date.now();
+      META.gems += ach.reward;
+      META.stats.totalGemsEarned = (META.stats.totalGemsEarned || 0) + ach.reward;
+      newlyUnlocked.push(ach);
+    }
+  }
+  if(newlyUnlocked.length > 0){
+    saveMeta();
+    updateGemDisplay();
+    bumpHud('hudGem');
+    newlyUnlocked.forEach((ach, i) => {
+      setTimeout(() => showAchievementToast(ach), i * 1200);
+    });
+  }
+}
+
+function showAchievementToast(ach){
+  const toast = document.createElement('div');
+  toast.className = 'ach-toast';
+  toast.innerHTML = `
+    <div class="ach-toast-icon">${ach.icon}</div>
+    <div class="ach-toast-body">
+      <div class="ach-toast-title">🏅 THÀNH TỰU MỞ KHOÁ</div>
+      <div class="ach-toast-name">${ach.name} <span style="color:#d9480f">+${ach.reward}💎</span></div>
+    </div>
+  `;
+  document.body.appendChild(toast);
+  Sound.play('migrate');
+  setTimeout(() => {
+    toast.classList.add('out');
+    setTimeout(() => toast.remove(), 500);
+  }, 3500);
+}
+
+let currentAchCat = 'all';
+function renderAchievementModal(){
+  const list = document.getElementById('amList');
+  list.innerHTML = '';
+  const unlocked = Object.keys(META.achievements || {}).length;
+  document.getElementById('amUnlocked').textContent = unlocked;
+  document.getElementById('amTotal').textContent = ACHIEVEMENTS.length;
+  const filtered = currentAchCat === 'all' ? ACHIEVEMENTS : ACHIEVEMENTS.filter(a => a.cat === currentAchCat);
+  filtered.forEach(ach => {
+    const isUnlocked = !!META.achievements[ach.id];
+    const progress = Math.min(ach.target, getAchievementProgress(ach));
+    const div = document.createElement('div');
+    div.className = `amc ${isUnlocked ? 'unlocked' : 'locked'}`;
+    div.innerHTML = `
+      <div class="amc-icon">${isUnlocked ? ach.icon : '🔒'}</div>
+      <div class="amc-body">
+        <div class="amc-title">${ach.name}</div>
+        <div class="amc-desc">${ach.desc}</div>
+        <div class="amc-prog">Tiến độ: <b>${progress}</b>/${ach.target} ${isUnlocked ? '· <span style="color:var(--ok)">✓ Đã mở</span>' : ''}</div>
+      </div>
+      <div class="amc-reward">+${ach.reward}💎</div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   📊 STATS
+   ═══════════════════════════════════════════════════════════════ */
+function renderStatsModal(){
+  const s = META.stats || {};
+  const content = document.getElementById('stContent');
+  const hours = Math.floor((s.totalPlaytime || 0) / 3600);
+  const minutes = Math.floor(((s.totalPlaytime || 0) % 3600) / 60);
+  const playtimeStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+  const winRate = s.totalGames > 0 ? Math.round((s.totalWins / s.totalGames) * 100) : 0;
+  const totalSkins = (META.ownedSkins?.length || 0) + Object.values(META.ownedTroopSkins || {}).reduce((a,b) => a + b.length, 0);
+  const unlockedAch = Object.keys(META.achievements || {}).length;
+  content.innerHTML = `
+    <div class="sm-sec">
+      <div class="sm-title">⚔️ Chiến đấu</div>
+      <div class="sm-grid">
+        <div class="sm-stat"><div class="sm-stat-icon">🎮</div><div class="sm-stat-label">Ván đã chơi</div><div class="sm-stat-value">${s.totalGames || 0}</div></div>
+        <div class="sm-stat"><div class="sm-stat-icon">🏆</div><div class="sm-stat-label">Chiến thắng</div><div class="sm-stat-value ok">${s.totalWins || 0}</div></div>
+        <div class="sm-stat"><div class="sm-stat-icon">📈</div><div class="sm-stat-label">Tỉ lệ thắng</div><div class="sm-stat-value gold">${winRate}%</div></div>
+        <div class="sm-stat"><div class="sm-stat-icon">🌊</div><div class="sm-stat-label">Đợt cao nhất</div><div class="sm-stat-value gold">${s.highestWave || 0}</div></div>
+        <div class="sm-stat"><div class="sm-stat-icon">⚔️</div><div class="sm-stat-label">Tổng kills</div><div class="sm-stat-value">${(s.totalKills || 0).toLocaleString()}</div></div>
+        <div class="sm-stat"><div class="sm-stat-icon">⏱️</div><div class="sm-stat-label">Thời gian chơi</div><div class="sm-stat-value">${playtimeStr}</div></div>
+      </div>
+    </div>
+    <div class="sm-sec">
+      <div class="sm-title">🔨 Xây dựng</div>
+      <div class="sm-grid">
+        <div class="sm-stat"><div class="sm-stat-icon">🏗️</div><div class="sm-stat-label">Tháp đã xây</div><div class="sm-stat-value">${s.totalTowersBuilt || 0}</div></div>
+        <div class="sm-stat"><div class="sm-stat-icon">⬆️</div><div class="sm-stat-label">Lần nâng cấp</div><div class="sm-stat-value">${s.totalUpgrades || 0}</div></div>
+      </div>
+    </div>
+    <div class="sm-sec">
+      <div class="sm-title">💎 Sưu tầm</div>
+      <div class="sm-grid">
+        <div class="sm-stat"><div class="sm-stat-icon">✨</div><div class="sm-stat-label">Skin sở hữu</div><div class="sm-stat-value gem">${totalSkins}</div></div>
+        <div class="sm-stat"><div class="sm-stat-icon">⚡</div><div class="sm-stat-label">Tháp premium</div><div class="sm-stat-value gem">${META.ownedPremium?.length || 0}/4</div></div>
+        <div class="sm-stat"><div class="sm-stat-icon">🎨</div><div class="sm-stat-label">Theme mở khoá</div><div class="sm-stat-value gem">${META.unlockedThemes?.length || 0}/8</div></div>
+        <div class="sm-stat"><div class="sm-stat-icon">🗺️</div><div class="sm-stat-label">Map đã thắng</div><div class="sm-stat-value ok">${META.completedMaps?.length || 0}/9</div></div>
+        <div class="sm-stat"><div class="sm-stat-icon">🏅</div><div class="sm-stat-label">Thành tựu</div><div class="sm-stat-value gold">${unlockedAch}/${ACHIEVEMENTS.length}</div></div>
+        <div class="sm-stat"><div class="sm-stat-icon">🔥</div><div class="sm-stat-label">Streak hiện tại</div><div class="sm-stat-value">${META.loginStreak?.streak || 0} ngày</div></div>
+      </div>
+    </div>
+    <div class="sm-sec">
+      <div class="sm-title">💰 Kinh tế</div>
+      <div class="sm-grid">
+        <div class="sm-stat"><div class="sm-stat-icon">💎</div><div class="sm-stat-label">Tổng gem kiếm</div><div class="sm-stat-value gem">${(s.totalGemsEarned || 0).toLocaleString()}</div></div>
+        <div class="sm-stat"><div class="sm-stat-icon">💰</div><div class="sm-stat-label">Gem hiện có</div><div class="sm-stat-value gold">${META.gems}</div></div>
+        <div class="sm-stat"><div class="sm-stat-icon">🎰</div><div class="sm-stat-label">Tổng quay gacha</div><div class="sm-stat-value">${(META.totalPulls || 0) + (META.troopPulls || 0)}</div></div>
+      </div>
+    </div>
+  `;
+}
 
 /* ═══════════════════════════════════════════════════════════════
    CLOUD SYNC
@@ -1057,6 +1391,8 @@ function cloudSaveMeta(){
         hasAnyWin:META.hasAnyWin,
         ownedTroopSkins:META.ownedTroopSkins,equippedTroopSkins:META.equippedTroopSkins,
         troopPity:META.troopPity,troopPulls:META.troopPulls,
+        dailyQuests:META.dailyQuests,loginStreak:META.loginStreak,
+        achievements:META.achievements,stats:META.stats,
         updatedAt:firebase.firestore.FieldValue.serverTimestamp()
       },{merge:true});
     }catch(e){}
@@ -1075,7 +1411,9 @@ function saveMeta(){
       unlockedThemes:META.unlockedThemes,completedMaps:META.completedMaps,
       hasAnyWin:META.hasAnyWin,
       ownedTroopSkins:META.ownedTroopSkins,equippedTroopSkins:META.equippedTroopSkins,
-      troopPity:META.troopPity,troopPulls:META.troopPulls
+      troopPity:META.troopPity,troopPulls:META.troopPulls,
+      dailyQuests:META.dailyQuests,loginStreak:META.loginStreak,
+      achievements:META.achievements,stats:META.stats
     }));
   }catch(e){}
   cloudSaveMeta();
@@ -1089,6 +1427,10 @@ function applyMeta(d){
   META.hasAnyWin=d.hasAnyWin||false;
   META.ownedTroopSkins=d.ownedTroopSkins||{};META.equippedTroopSkins=d.equippedTroopSkins||{};
   META.troopPity=d.troopPity||0;META.troopPulls=d.troopPulls||0;
+  META.dailyQuests=d.dailyQuests||{date:'',quests:[]};
+  META.loginStreak=d.loginStreak||{lastClaim:'',streak:0,claimed:[]};
+  META.achievements=d.achievements||{};
+  META.stats=d.stats||{totalKills:0,totalGames:0,totalWins:0,totalPlaytime:0,totalGoldEarned:0,totalGemsEarned:0,highestWave:0,towerUsage:{},totalUpgrades:0,totalTowersBuilt:0,bossKills:0};
   if(!META.unlockedThemes.includes('dark')) META.unlockedThemes.push('dark');
   if(!META.unlockedThemes.includes('light')) META.unlockedThemes.push('light');
   if(!META.unlockedThemes.includes(Theme.cur)){Theme.cur='dark';localStorage.setItem(Theme.k,'dark');Theme.apply();}
@@ -1101,9 +1443,6 @@ function refreshAvail(){
   for(const k of META.ownedPremium) if(PT[k]) G.avail[k]=PT[k];
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SAVE
-   ═══════════════════════════════════════════════════════════════ */
 const Save={
   key(){ return currentUser ? `td_save_${currentUser.uid}` : GK_SAVE; },
   save(){
@@ -1141,7 +1480,14 @@ function migrate(uid){
         ownedTroopSkins:(()=>{const o={};for(const k of new Set([...Object.keys(gm.ownedTroopSkins||{}),...Object.keys(um.ownedTroopSkins||{})])){o[k]=[...new Set([...((gm.ownedTroopSkins||{})[k]||[]),...((um.ownedTroopSkins||{})[k]||[])])];}return o;})(),
         equippedTroopSkins:{...(gm.equippedTroopSkins||{}),...(um.equippedTroopSkins||{})},
         troopPity:Math.max(gm.troopPity||0,um.troopPity||0),
-        troopPulls:(gm.troopPulls||0)+(um.troopPulls||0)
+        troopPulls:(gm.troopPulls||0)+(um.troopPulls||0),
+        dailyQuests:um.dailyQuests||gm.dailyQuests||{date:'',quests:[]},
+        loginStreak:um.loginStreak||gm.loginStreak||{lastClaim:'',streak:0,claimed:[]},
+        achievements:{...(gm.achievements||{}),...(um.achievements||{})},
+        stats:(()=>{
+          const a=gm.stats||{},b=um.stats||{};
+          return {totalKills:(a.totalKills||0)+(b.totalKills||0),totalGames:(a.totalGames||0)+(b.totalGames||0),totalWins:(a.totalWins||0)+(b.totalWins||0),totalPlaytime:(a.totalPlaytime||0)+(b.totalPlaytime||0),totalGoldEarned:(a.totalGoldEarned||0)+(b.totalGoldEarned||0),totalGemsEarned:(a.totalGemsEarned||0)+(b.totalGemsEarned||0),highestWave:Math.max(a.highestWave||0,b.highestWave||0),towerUsage:{...a.towerUsage,...b.towerUsage},totalUpgrades:(a.totalUpgrades||0)+(b.totalUpgrades||0),totalTowersBuilt:(a.totalTowersBuilt||0)+(b.totalTowersBuilt||0),bossKills:(a.bossKills||0)+(b.bossKills||0)};
+        })()
       };
       localStorage.setItem(uk,JSON.stringify(merged));localStorage.removeItem(GK_META);res.meta=merged;
     }
@@ -1202,6 +1548,12 @@ class Enemy{
     const gm=1+(getBonus()?.goldBonus||0);
     const gain=Math.floor(this.reward*gm);
     G.gold+=gain;updateHUD();bumpHud('hudGold');
+    // Stats tracking
+    META.stats.totalKills = (META.stats.totalKills || 0) + 1;
+    if(this.boss) META.stats.bossKills = (META.stats.bossKills || 0) + 1;
+    META.stats.totalGoldEarned = (META.stats.totalGoldEarned || 0) + gain;
+    trackQuest('kills', 1);
+    if(this.boss) trackQuest('bossKills', 1);
     const n=this.boss?30:10;
     for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,sp=rand(60,200);G.particles.push(new Particle(this.x,this.y,this.color,Math.cos(a)*sp,Math.sin(a)*sp,rand(.4,.9),rand(2,5)));}
     G.floaters.push(new Floater(this.x,this.y-20,'+'+gain+'💰','#ffd43b',1.2,16));
@@ -1278,7 +1630,10 @@ class Tower{
     G.gold-=c;this.totalSpent+=c;this.level++;
     this.stats=this.calcStats();this.pulse=1;
     Sound.play('upgrade');
+    META.stats.totalUpgrades=(META.stats.totalUpgrades||0)+1;
+    trackQuest('upgrades',1);
     for(let i=0;i<20;i++){const a=Math.random()*Math.PI*2;G.particles.push(new Particle(this.x,this.y,this.troopSkin.color,Math.cos(a)*rand(50,150),Math.sin(a)*rand(50,150)-40,.7,rand(2,4)));}
+    checkAchievements();
     return true;
   }
   findTarget(){
@@ -1349,7 +1704,7 @@ function emitSkillEffect(x,y,effect,color){
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   PROJECTILE + EFFECTS
+   PROJECTILE / EFFECTS
    ═══════════════════════════════════════════════════════════════ */
 class Proj{
   constructor(x,y,target,tower){
@@ -1400,7 +1755,6 @@ class Particle{constructor(x,y,c,vx,vy,life,size){this.x=x;this.y=y;this.vx=vx;t
 class Floater{constructor(x,y,t,c,life=1,size=14){this.x=x;this.y=y;this.text=t;this.color=c;this.life=life;this.maxLife=life;this.size=size;this.dead=false;this.vy=-40;}update(dt){this.life-=dt;if(this.life<=0){this.dead=true;return;}this.y+=this.vy*dt;this.vy*=.94;}draw(ctx){const a=this.life/this.maxLife;ctx.globalAlpha=a;ctx.font=`900 ${this.size}px 'Segoe UI',sans-serif`;ctx.textAlign='center';ctx.strokeStyle='rgba(0,0,0,.8)';ctx.lineWidth=3;ctx.strokeText(this.text,this.x,this.y);ctx.fillStyle=this.color;ctx.fillText(this.text,this.x,this.y);ctx.globalAlpha=1;}}
 class RingE{constructor(x,y,mr,c){this.x=x;this.y=y;this.maxR=mr;this.color=c;this.r=0;this.life=.4;this.maxLife=.4;this.dead=false;}update(dt){this.life-=dt;if(this.life<=0){this.dead=true;return;}this.r=this.maxR*(1-this.life/this.maxLife);}draw(ctx){ctx.globalAlpha=this.life/this.maxLife;ctx.strokeStyle=this.color;ctx.lineWidth=3;ctx.shadowColor=this.color;ctx.shadowBlur=15;ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.stroke();ctx.shadowBlur=0;ctx.globalAlpha=1;}}
 class LgtE{constructor(x1,y1,x2,y2,c){this.color=c;this.life=.2;this.maxLife=.2;this.dead=false;this.points=[{x:x1,y:y1}];for(let i=1;i<6;i++){const t=i/6;this.points.push({x:lerp(x1,x2,t)+rand(-12,12),y:lerp(y1,y2,t)+rand(-12,12)});}this.points.push({x:x2,y:y2});}update(dt){this.life-=dt;if(this.life<=0) this.dead=true;}draw(ctx){ctx.globalAlpha=this.life/this.maxLife;ctx.strokeStyle=this.color;ctx.lineWidth=3;ctx.shadowColor=this.color;ctx.shadowBlur=20;ctx.beginPath();ctx.moveTo(this.points[0].x,this.points[0].y);for(let i=1;i<this.points.length;i++) ctx.lineTo(this.points[i].x,this.points[i].y);ctx.stroke();ctx.strokeStyle='#fff';ctx.lineWidth=1;ctx.stroke();ctx.shadowBlur=0;ctx.globalAlpha=1;}}
-
 function screenShake(a,d){if(!Shake.enabled) return;G.shake.t=Math.max(G.shake.t,d);G.shake.amount=Math.max(G.shake.amount,a);}
 function bumpHud(id){const el=document.getElementById(id);if(!el) return;el.classList.remove('bump');void el.offsetWidth;el.classList.add('bump');}
 
@@ -1494,16 +1848,21 @@ function placeTower(type,gx,gy){
   G.occupied.add(k);
   updateHUD();bumpHud('hudGold');
   Sound.play('place');
+  // Stats
+  META.stats.totalTowersBuilt=(META.stats.totalTowersBuilt||0)+1;
+  META.stats.towerUsage[type]=(META.stats.towerUsage[type]||0)+1;
+  trackQuest('built',1);
   const t=G.towers[G.towers.length-1];
   for(let i=0;i<15;i++){const a=Math.random()*Math.PI*2;G.particles.push(new Particle(t.x,t.y,d.color,Math.cos(a)*rand(40,120),Math.sin(a)*rand(40,120),.5,rand(2,4)));}
   G.effects.push(new RingE(t.x,t.y,GRID*.8,d.color));
   updateShopSel();
+  checkAchievements();
   return true;
 }
 function notify(t,err=false,ok=false,gm=false){const el=document.createElement('div');el.className='nt'+(err?' err':ok?' ok':gm?' gm':'');el.textContent=t;document.getElementById('wrap').appendChild(el);setTimeout(()=>el.remove(),2400);}
 
 /* ═══════════════════════════════════════════════════════════════
-   UI UPDATE
+   UI
    ═══════════════════════════════════════════════════════════════ */
 function updateHUD(){document.getElementById('goldVal').textContent=Math.floor(G.gold);document.getElementById('hpVal').textContent=G.hp;document.getElementById('waveVal').textContent=G.wave+'/'+G.maxWave;}
 function updateGemDisplay(){const a=document.getElementById('gemVal');if(a) a.textContent=META.gems;const b=document.getElementById('shGem');if(b) b.textContent=META.gems;}
@@ -1615,7 +1974,32 @@ document.getElementById('shakeBtn').addEventListener('click',()=>Shake.toggle())
 document.getElementById('tmClose').addEventListener('click',closeThemeModal);
 document.getElementById('themeModal').addEventListener('click',e=>{if(e.target.id==='themeModal') closeThemeModal();});
 
-/* KEYBOARD SHORTCUTS — FIXED */
+// V14 buttons
+document.getElementById('questBtn').addEventListener('click',()=>{Sound.play('click');renderQuestModal();document.getElementById('questModal').classList.remove('hidden');});
+document.getElementById('achieveBtn').addEventListener('click',()=>{Sound.play('click');renderAchievementModal();document.getElementById('achModal').classList.remove('hidden');});
+document.getElementById('statsBtn').addEventListener('click',()=>{Sound.play('click');renderStatsModal();document.getElementById('statsModal').classList.remove('hidden');});
+document.getElementById('questBtnM').addEventListener('click',()=>{Sound.play('click');renderQuestModal();document.getElementById('questModal').classList.remove('hidden');});
+document.getElementById('achieveBtnM').addEventListener('click',()=>{Sound.play('click');renderAchievementModal();document.getElementById('achModal').classList.remove('hidden');});
+document.getElementById('statsBtnM').addEventListener('click',()=>{Sound.play('click');renderStatsModal();document.getElementById('statsModal').classList.remove('hidden');});
+document.getElementById('qClose').addEventListener('click',()=>{Sound.play('click');document.getElementById('questModal').classList.add('hidden');});
+document.getElementById('aClose').addEventListener('click',()=>{Sound.play('click');document.getElementById('achModal').classList.add('hidden');});
+document.getElementById('stClose').addEventListener('click',()=>{Sound.play('click');document.getElementById('statsModal').classList.add('hidden');});
+document.getElementById('stkClaim').addEventListener('click',claimStreak);
+document.querySelectorAll('.am-tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    currentAchCat = t.dataset.cat;
+    document.querySelectorAll('.am-tab').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on');
+    renderAchievementModal();
+  });
+});
+['questModal','achModal','statsModal','streakModal'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{
+    if(e.target.id===id) document.getElementById(id).classList.add('hidden');
+  });
+});
+
+// Keyboard shortcuts
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape' && G.tut.active){endTut();e.preventDefault();return;}
   if(G.state!=='playing') return;
@@ -1644,6 +2028,7 @@ function startWave(){
   G.spawnQueue=genWave(G.wave,G.map.difficulty).map((e,i)=>({...e,id:i}));
   G.spawnTimer=0;updateHUD();bumpHud('hudWave');
   showWB('WAVE '+G.wave);Sound.play('wave');Save.save();
+  setQuestMax('maxWave',G.wave);
 }
 function showWB(t){const el=document.getElementById('wb');el.textContent=t;el.classList.remove('show');void el.offsetWidth;el.classList.add('show');}
 function checkWaveEnd(){
@@ -1677,11 +2062,19 @@ function startGame(mi,save=null){
   hidePC();
   buildShop();updateHUD();hideTowerInfo();updateAuthUI();
   G.state='playing';
-  ['mModal','goModal','cModal','shModal','grModal','spinModal'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  ['mModal','goModal','cModal','shModal','grModal','spinModal','streakModal'].forEach(id=>document.getElementById(id).classList.add('hidden'));
   document.getElementById('pauseBtn').textContent='⏸';
   document.getElementById('speedBtn').textContent='▶ 1x';
   G.speed=1;
   endTut();
+  // V14 stats
+  if(!save){
+    META.stats.totalGames=(META.stats.totalGames||0)+1;
+    trackQuest('games',1);
+  }
+  G.gameStartTime=Date.now();
+  G.hpLostThisGame=0;
+  saveMeta();
   if(mi===0&&!save) requestAnimationFrame(()=>startTut());
   else{G.betweenWaves=true;G.waveCooldown=8;}
 }
@@ -1689,20 +2082,41 @@ function endGame(win){
   endTut();
   G.state=win?'win':'gameover';
   Save.clear();
+  // V14 stats
+  if(G.gameStartTime){
+    const playtime=Math.floor((Date.now()-G.gameStartTime)/1000);
+    META.stats.totalPlaytime=(META.stats.totalPlaytime||0)+playtime;
+    G.gameStartTime=null;
+  }
+  if(G.wave>(META.stats.highestWave||0)){
+    META.stats.highestWave=G.wave;
+    setQuestMax('maxWave',G.wave);
+  }
   let reward=0;
   if(win){
     const base=G.map.gemReward||100;
     const bonus=Math.floor(G.wave*5);
     reward=base+bonus;
+    // Weekend bonus
+    if(isWeekend()){
+      reward *= 2;
+      notify(`🎉 Cuối tuần X2! +${reward}💎`,false,true);
+    }
     META.gems+=reward;
+    META.stats.totalGemsEarned=(META.stats.totalGemsEarned||0)+reward;
+    META.stats.totalWins=(META.stats.totalWins||0)+1;
+    trackQuest('wins',1);
+    if((G.hpLostThisGame||0)===0) trackQuest('noLeak',1);
     if(!META.completedMaps.includes(G.mapIndex)) META.completedMaps.push(G.mapIndex);
     META.hasAnyWin=true;
     saveMeta();updateGemDisplay();
+    checkAchievements();
     setTimeout(()=>checkThemeUnlocks(),1800);
+  } else {
+    saveMeta();
+    checkAchievements();
   }
-  // Close all other modals first
   ['shModal','grModal','spinModal'].forEach(id=>document.getElementById(id).classList.add('hidden'));
-  // Then show goModal
   document.getElementById('goModal').classList.remove('hidden');
   const t=document.getElementById('gt');
   t.textContent=win?'CHIẾN THẮNG!':'THẤT BẠI';
@@ -1719,7 +2133,7 @@ function goMenu(){
   if(G.state==='playing'||G.state==='paused'){Save.save();notify('💾 Đã lưu');}
   G.state='menu';
   document.getElementById('mModal').classList.remove('hidden');
-  ['goModal','shModal','grModal','spinModal'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  ['goModal','shModal','grModal','spinModal','questModal','achModal','statsModal'].forEach(id=>document.getElementById(id).classList.add('hidden'));
   document.getElementById('pauseBtn').textContent='⏸';
   updateAuthUI();buildMenu();
 }
@@ -1734,6 +2148,7 @@ function update(dt){
     e.update(dt);
     if(e.reachedEnd&&!e.dead){
       e.dead=true;G.hp--;screenShake(8,.3);updateHUD();bumpHud('hudHp');Sound.play('leak');
+      G.hpLostThisGame=(G.hpLostThisGame||0)+1;
       G.floaters.push(new Floater(e.x,e.y-20,'-1❤️','#ff6b6b',1.2,20));
       for(let i=0;i<15;i++){const a=Math.random()*Math.PI*2;G.particles.push(new Particle(e.x,e.y,'#ff6b6b',Math.cos(a)*rand(50,150),Math.sin(a)*rand(50,150),.6,4));}
       if(G.hp<=0) endGame(false);
@@ -2022,23 +2437,27 @@ function doGacha(count){
   const cost=count===1?50:450;
   if(META.gems<cost){notify('Không đủ gem! Cần '+cost+'💎',true);Sound.play('error');return;}
   META.gems-=cost;updateGemDisplay();
+  trackQuest('gachaPulls',1);
   showSpinAnimation(count,'char',()=>{
     const results=[];
     for(let i=0;i<count;i++) results.push(rollSkin());
     saveMeta();
     showGachaResults(results);
     setTimeout(()=>checkThemeUnlocks(),800);
+    checkAchievements();
   });
 }
 function doTroopGacha(count){
   const cost=count===1?50:450;
   if(META.gems<cost){notify('Không đủ gem! Cần '+cost+'💎',true);Sound.play('error');return;}
   META.gems-=cost;updateGemDisplay();
+  trackQuest('gachaPulls',1);
   showSpinAnimation(count,'troop',()=>{
     const results=[];
     for(let i=0;i<count;i++) results.push(rollTroopSkin());
     saveMeta();
     showTroopGachaResults(results);
+    checkAchievements();
   });
 }
 function showGachaResults(results){
@@ -2130,6 +2549,7 @@ function buyPT(k){
   saveMeta();updateGemDisplay();refreshAvail();
   Sound.play('gem');
   notify(`✅ Đã mua ${d.name}!`,false,true);
+  checkAchievements();
   renderShopTab('towers');
 }
 function toggleEquip(id){
@@ -2293,6 +2713,9 @@ function enterGuest(){
   if(gm) applyMeta(gm);
   else applyMeta({gems:0,ownedSkins:[],equipped:null,ownedPremium:[],pity:0,totalPulls:0,unlockedThemes:['dark','light'],completedMaps:[],hasAnyWin:false,ownedTroopSkins:{},equippedTroopSkins:{},troopPity:0,troopPulls:0});
   updateAuthUI();buildMenu();
+  generateDailyQuests();
+  checkStreakReset();
+  updateEventBanner();
 }
 document.getElementById('menuAuthBtn').addEventListener('click',async()=>{
   const act=document.getElementById('menuAuthBtn').dataset.action||'logout';
@@ -2338,6 +2761,9 @@ function bootAuth(){
           updateAuthUI();buildMenu();
         })();}
         updateAuthUI();buildMenu();
+        generateDailyQuests();
+        checkStreakReset();
+        updateEventBanner();
       } else {
         aModal.classList.remove('hidden');
         mModal.classList.add('hidden');
@@ -2373,8 +2799,8 @@ const TSTEPS=[
   {t:()=>document.getElementById('shop'),txt:'<b>Cửa hàng tháp</b>. Tháp phát sáng xanh = mua được ngay!',pos:'top',d:5500},
   {t:()=>document.querySelector('.tc'),txt:'<b>Ví dụ:</b> Cung Thủ. Bấm phím <b>1-9</b> để chọn nhanh.',pos:'top',d:5500},
   {t:null,txt:IS_MOBILE?'Chạm <b>ô trống</b> để đặt tháp. Nút <b>✓ XÂY</b> để xác nhận.':'Bấm <b>ô trống</b> để đặt tháp. Nhấn <b>Space</b> để tạm dừng.',pos:'center',d:6000},
+  {t:()=>document.getElementById('questBtn'),txt:'Bấm <b>🎯</b> để xem <b>nhiệm vụ hàng ngày</b> — kiếm gem miễn phí!',pos:'bottom',d:6000},
   {t:()=>document.getElementById('shopBtn'),txt:'Vào <b>🛒 Shop</b> → tab <b>🎭 Quân</b> để quay trang phục!',pos:'top',d:6000},
-  {t:()=>document.getElementById('themeBtn'),txt:'Nhấn <b>🎨</b> để đổi giao diện. Có 9 map để chinh phục!',pos:'bottom',d:5500},
   {t:()=>document.getElementById('speedBtn'),txt:'Phím tắt: <b>1-9</b> chọn tháp · <b>Space/P</b> tạm dừng · <b>ESC</b> bỏ chọn',pos:'bottom',d:6000}
 ];
 function startTut(){if(!G.map||G.mapIndex!==0) return;G.tut.active=true;G.tut.step=0;document.getElementById('tut').classList.remove('hidden');Sound.play('tutorial');showTutStep();}
@@ -2409,15 +2835,44 @@ document.getElementById('tsk').addEventListener('click',()=>{Sound.play('click')
 /* ═══════════════════════════════════════════════════════════════
    INIT
    ═══════════════════════════════════════════════════════════════ */
-Theme.init();Shake.init();
+Theme.init();
+Shake.init();
 refreshAvail();
-buildMenu();buildShop();
-G.map=MAPS[0];markPath();
-updateHUD();updateAuthUI();
+buildMenu();
+buildShop();
+G.map=MAPS[0];
+markPath();
+updateHUD();
+updateAuthUI();
+
+// V14 init
+generateDailyQuests();
+checkStreakReset();
+updateEventBanner();
+
 G.lastTime=performance.now();
 requestAnimationFrame(loop);
 setInterval(()=>{if(G.state==='playing') Save.save();},3000);
 window.addEventListener('beforeunload',()=>{if(G.state==='playing'||G.state==='paused') Save.save();saveMeta();});
+
+// Auto-save stats + check achievements every 30s during play
+setInterval(()=>{
+  if(G.state === 'playing' && G.gameStartTime){
+    META.stats.totalPlaytime = (META.stats.totalPlaytime || 0) + 30;
+    G.gameStartTime = Date.now();
+    saveMeta();
+    checkAchievements();
+  }
+}, 30000);
+
+// Check streak on load
+setTimeout(()=>{
+  if(canClaimStreak() && META.loginStreak.streak >= 0){
+    renderStreakModal();
+    document.getElementById('streakModal').classList.remove('hidden');
+  }
+}, 1500);
+
 function resize(){
   const wr=document.getElementById('wrap');
   let sc;
