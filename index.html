@@ -77,10 +77,8 @@ button{touch-action:manipulation}
 .modal{position:absolute;inset:0;z-index:20;background:var(--mdl);display:flex;flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(8px);animation:fadeIn .35s ease;overflow-y:auto;padding:20px}
 .modal.hidden{display:none!important}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-#shModal{z-index:60}
-#grModal{z-index:70}
-#spinModal{z-index:80}
-#themeModal{z-index:55}
+#shModal{z-index:60}#grModal{z-index:70}#spinModal{z-index:80}#themeModal{z-index:55}
+#questModal,#achModal,#statsModal,#streakModal{z-index:58}
 .abox{width:400px;padding:32px 28px;border-radius:20px;background:var(--card);border:1px solid var(--bd2);box-shadow:0 30px 80px rgba(0,0,0,.7);text-align:center;animation:popIn .45s cubic-bezier(.34,1.56,.64,1)}
 @keyframes popIn{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
 .al{font-size:30px;font-weight:900;letter-spacing:3px;background:linear-gradient(180deg,var(--accl),var(--accd));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px}
@@ -116,7 +114,6 @@ button{touch-action:manipulation}
 .mc{width:180px;padding:12px;border-radius:14px;background:var(--card);border:2px solid var(--bd);cursor:pointer;text-align:center;position:relative;transition:all .3s cubic-bezier(.34,1.56,.64,1)}
 .mc:hover{transform:translateY(-6px) scale(1.03);border-color:var(--accl);box-shadow:0 20px 40px rgba(77,171,247,.3)}
 .mc.sel{border-color:var(--gold);box-shadow:0 0 30px rgba(255,212,59,.4)}
-.mc:active{transform:translateY(-3px) scale(1.01)}
 .mp{width:100%;height:90px;border-radius:8px;margin-bottom:8px;overflow:hidden}
 .mnr{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px}
 .mn{font-weight:700;font-size:14px;color:var(--txt)}
@@ -293,9 +290,6 @@ button{touch-action:manipulation}
 .troop-rarity{font-size:7px;font-weight:800;letter-spacing:.3px;margin-top:1px}
 .troop-card.common .troop-rarity{color:#adb5bd}.troop-card.rare .troop-rarity{color:#74c0fc}.troop-card.epic .troop-rarity{color:#c084fc}.troop-card.legendary .troop-rarity{color:#ffd43b}.troop-card.mythic .troop-rarity{color:#fff;text-shadow:0 0 6px #ffd43b}
 .skill-badge{position:absolute;top:4px;left:4px;font-size:12px;filter:drop-shadow(0 0 4px currentColor)}
-
-/* V14 SYSTEMS */
-#questModal,#achModal,#statsModal,#streakModal{z-index:58}
 .qmb,.amb,.smb,.stkb{width:min(640px,94vw);max-height:90vh;padding:22px;border-radius:20px;background:var(--card);border:1px solid var(--bd2);box-shadow:0 30px 80px rgba(0,0,0,.9);display:flex;flex-direction:column;animation:popIn .4s cubic-bezier(.34,1.56,.64,1);overflow:hidden}
 .stkb{width:min(600px,94vw);align-items:center}
 .qmh,.amh,.smh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px}
@@ -373,95 +367,84 @@ button{touch-action:manipulation}
 .ach-toast-body{flex:1}
 .ach-toast-title{font-size:10px;font-weight:800;letter-spacing:1px;opacity:.8}
 .ach-toast-name{font-size:14px;font-weight:900;margin-top:2px}
-
 @media(max-width:900px),(pointer:coarse){
-  #hud{height:48px;padding:0 8px;gap:5px}
-  .hud-i{font-size:12px;gap:3px}
-  .hud-ic{width:18px;height:18px;font-size:10px}
-  .hud-user{display:none!important}
-  .btn{padding:10px 12px;font-size:12px;min-height:40px}
-  .btn.ic{min-width:42px;padding:10px;min-height:42px}
-  #quickLoginBtn{padding:8px 10px;font-size:11px}
-  #shop{bottom:6px;left:6px;right:6px;transform:none;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:8px 12px;gap:6px;justify-content:flex-start;scrollbar-width:none;border-radius:16px}
-  #shop::-webkit-scrollbar{display:none}
-  .tc{flex-shrink:0;scroll-snap-align:start;min-width:68px;width:68px;padding:8px 4px;border-radius:12px;min-height:90px}
-  .t-ic{width:34px;height:34px;font-size:16px;margin-bottom:5px}
-  .t-nm{font-size:9px}
-  .t-c{font-size:10px}
-  .hk{display:none}
-  .tc:hover{transform:none}
-  .tc:active{transform:scale(.94)}
-  #towerInfo{bottom:100px;left:8px;right:8px;transform:none!important;flex-wrap:wrap;justify-content:center;padding:10px 12px;gap:8px 12px}
-  #towerInfo.show{transform:none!important}
-  #towerInfo .st{font-size:11px}
-  #towerInfo .btn{padding:10px 14px;font-size:12px;min-height:40px}
-  #mt{font-size:32px;letter-spacing:2px}
-  #ms{font-size:11px;margin-bottom:16px}
-  #ml{grid-template-columns:repeat(2,minmax(140px,1fr));gap:10px;margin-bottom:16px;max-height:60vh}
-  .mc{width:100%;padding:10px}
-  .mp{height:70px}
-  .mn{font-size:12px}
-  .md{font-size:9px}
-  .mr{flex-direction:column;width:100%;gap:8px}
-  .mr .btn{width:100%;padding:14px;font-size:14px;min-height:48px}
-  .abox{width:92vw;max-width:400px;padding:24px 20px}
-  .al{font-size:24px}
-  .af input{padding:14px;font-size:16px;min-height:48px}
-  .ab,.ag,.au{padding:14px;min-height:48px}
-  #tooltip{position:fixed!important;left:50%!important;top:56px!important;transform:translateX(-50%) translateY(0)!important;max-width:92vw;min-width:0;width:auto;z-index:600}
-  #tooltip:not(.show){display:none!important}
-  .tb{font-size:13px;padding:12px 16px;max-width:260px;line-height:1.45}
-  .ts{padding:12px 16px;font-size:13px;top:56px;min-height:44px}
-  .nt{font-size:12px;padding:10px 16px;max-width:90vw;top:60px}
-  #cModal .cb{padding:22px 20px;max-width:92vw}
-  #cModal h2{font-size:17px}
-  #cModal .cbt{flex-direction:column;gap:8px}
-  #cModal .cbt .btn{width:100%;padding:14px;min-height:48px}
-  #shModal .sb{padding:16px 12px;width:96vw;max-height:92vh}
-  .sht{font-size:18px}
-  .gd{padding:8px 14px;font-size:14px}
-  .shtab{padding:11px 8px;font-size:11px;min-width:90px;min-height:44px}
-  .skg{grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
-  .ski{font-size:26px}.skn{font-size:8px}.skr{font-size:7px}
-  .gb{padding:14px 16px;font-size:14px;min-width:0;flex:1;min-height:60px}
-  .tsg{grid-template-columns:1fr}
-  .ptc{padding:14px}
-  .pti{width:44px;height:44px;font-size:22px}
-  .ptb{padding:12px;font-size:13px;min-height:44px}
-  .grg{grid-template-columns:repeat(2,1fr);gap:10px}
-  .gri{font-size:34px}.grn{font-size:11px}.grt{font-size:22px}
-  .gra{flex-direction:column;width:100%;gap:8px}
-  .gra .btn{width:100%;padding:14px;min-height:48px}
-  .tm-grid{grid-template-columns:repeat(2,1fr);gap:8px}
-  .tm-card{padding:12px}
-  .tm-preview{height:48px}
-  .tm-name{font-size:12px}
-  .tm-close{padding:14px 24px;min-height:48px}
-  .spin-card{width:62px;height:86px;font-size:28px;border-width:2px}
-  .spin-title{font-size:22px}
-  .troop-grid{grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
-  .troop-icon{font-size:28px}
-  .troop-name{font-size:8px}
-  .troop-rarity{font-size:7px}
-  #pcb{padding:16px 26px;font-size:16px;min-height:52px}
-  #pcx{padding:16px 20px;font-size:16px;min-height:52px}
-  .qmb,.amb,.smb,.stkb{padding:16px 12px;width:96vw;max-height:92vh}
-  .qmt,.amt,.smt{font-size:16px}
-  .qmc,.amc{padding:10px 12px;gap:10px}
-  .qmc-icon,.amc-icon{width:38px;height:38px;font-size:18px}
-  .qmc-title,.amc-title{font-size:12px}
-  .qmc-desc,.amc-desc{font-size:10px}
-  .qmc-btn{padding:10px 12px;font-size:11px;min-height:44px}
-  .sm-grid{grid-template-columns:repeat(2,1fr);gap:8px}
-  .sm-stat-value{font-size:15px}
-  .stk-grid{grid-template-columns:repeat(2,1fr);gap:8px}
-  .event-banner{top:52px;font-size:11px;padding:6px 14px}
-  .ach-toast{max-width:calc(100vw - 32px);padding:12px 16px}
-  .ach-toast-icon{font-size:26px}
+#hud{height:48px;padding:0 8px;gap:5px}
+.hud-i{font-size:12px;gap:3px}
+.hud-ic{width:18px;height:18px;font-size:10px}
+.hud-user{display:none!important}
+.btn{padding:10px 12px;font-size:12px;min-height:40px}
+.btn.ic{min-width:42px;padding:10px;min-height:42px}
+#quickLoginBtn{padding:8px 10px;font-size:11px}
+#shop{bottom:6px;left:6px;right:6px;transform:none;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:8px 12px;gap:6px;justify-content:flex-start;scrollbar-width:none;border-radius:16px}
+#shop::-webkit-scrollbar{display:none}
+.tc{flex-shrink:0;scroll-snap-align:start;min-width:68px;width:68px;padding:8px 4px;border-radius:12px;min-height:90px}
+.t-ic{width:34px;height:34px;font-size:16px;margin-bottom:5px}
+.t-nm{font-size:9px}.t-c{font-size:10px}.hk{display:none}
+.tc:hover{transform:none}.tc:active{transform:scale(.94)}
+#towerInfo{bottom:100px;left:8px;right:8px;transform:none!important;flex-wrap:wrap;justify-content:center;padding:10px 12px;gap:8px 12px}
+#towerInfo.show{transform:none!important}
+#towerInfo .st{font-size:11px}
+#towerInfo .btn{padding:10px 14px;font-size:12px;min-height:40px}
+#mt{font-size:32px;letter-spacing:2px}
+#ms{font-size:11px;margin-bottom:16px}
+#ml{grid-template-columns:repeat(2,minmax(140px,1fr));gap:10px;margin-bottom:16px;max-height:60vh}
+.mc{width:100%;padding:10px}
+.mp{height:70px}.mn{font-size:12px}.md{font-size:9px}
+.mr{flex-direction:column;width:100%;gap:8px}
+.mr .btn{width:100%;padding:14px;font-size:14px;min-height:48px}
+.abox{width:92vw;max-width:400px;padding:24px 20px}
+.al{font-size:24px}
+.af input{padding:14px;font-size:16px;min-height:48px}
+.ab,.ag,.au{padding:14px;min-height:48px}
+#tooltip{position:fixed!important;left:50%!important;top:56px!important;transform:translateX(-50%) translateY(0)!important;max-width:92vw;min-width:0;width:auto;z-index:600}
+#tooltip:not(.show){display:none!important}
+.tb{font-size:13px;padding:12px 16px;max-width:260px;line-height:1.45}
+.ts{padding:12px 16px;font-size:13px;top:56px;min-height:44px}
+.nt{font-size:12px;padding:10px 16px;max-width:90vw;top:60px}
+#cModal .cb{padding:22px 20px;max-width:92vw}
+#cModal h2{font-size:17px}
+#cModal .cbt{flex-direction:column;gap:8px}
+#cModal .cbt .btn{width:100%;padding:14px;min-height:48px}
+#shModal .sb{padding:16px 12px;width:96vw;max-height:92vh}
+.sht{font-size:18px}.gd{padding:8px 14px;font-size:14px}
+.shtab{padding:11px 8px;font-size:11px;min-width:90px;min-height:44px}
+.skg{grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
+.ski{font-size:26px}.skn{font-size:8px}.skr{font-size:7px}
+.gb{padding:14px 16px;font-size:14px;min-width:0;flex:1;min-height:60px}
+.tsg{grid-template-columns:1fr}
+.ptc{padding:14px}.pti{width:44px;height:44px;font-size:22px}
+.ptb{padding:12px;font-size:13px;min-height:44px}
+.grg{grid-template-columns:repeat(2,1fr);gap:10px}
+.gri{font-size:34px}.grn{font-size:11px}.grt{font-size:22px}
+.gra{flex-direction:column;width:100%;gap:8px}
+.gra .btn{width:100%;padding:14px;min-height:48px}
+.tm-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+.tm-card{padding:12px}.tm-preview{height:48px}
+.tm-name{font-size:12px}
+.tm-close{padding:14px 24px;min-height:48px}
+.spin-card{width:62px;height:86px;font-size:28px;border-width:2px}
+.spin-title{font-size:22px}
+.troop-grid{grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
+.troop-icon{font-size:28px}.troop-name{font-size:8px}.troop-rarity{font-size:7px}
+#pcb{padding:16px 26px;font-size:16px;min-height:52px}
+#pcx{padding:16px 20px;font-size:16px;min-height:52px}
+.qmb,.amb,.smb,.stkb{padding:16px 12px;width:96vw;max-height:92vh}
+.qmt,.amt,.smt{font-size:16px}
+.qmc,.amc{padding:10px 12px;gap:10px}
+.qmc-icon,.amc-icon{width:38px;height:38px;font-size:18px}
+.qmc-title,.amc-title{font-size:12px}
+.qmc-desc,.amc-desc{font-size:10px}
+.qmc-btn{padding:10px 12px;font-size:11px;min-height:44px}
+.sm-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+.sm-stat-value{font-size:15px}
+.stk-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+.event-banner{top:52px;font-size:11px;padding:6px 14px}
+.ach-toast{max-width:calc(100vw - 32px);padding:12px 16px}
+.ach-toast-icon{font-size:26px}
 }
 @media(max-width:900px) and (orientation:portrait){
-  body::before{content:'📱 Hãy xoay ngang màn hình để chơi';position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--txt);font-size:20px;font-weight:700;text-align:center;padding:40px;z-index:99999;line-height:1.5}
-  #wrap{visibility:hidden}
+body::before{content:'📱 Hãy xoay ngang màn hình để chơi';position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--txt);font-size:20px;font-weight:700;text-align:center;padding:40px;z-index:99999;line-height:1.5}
+#wrap{visibility:hidden}
 }
 </style>
 </head>
@@ -470,12 +453,10 @@ button{touch-action:manipulation}
 <div id="pc" class="hidden"><button id="pcb">✓ XÂY</button><button id="pcx">✕</button></div>
 <div id="wrap">
 <canvas id="game"></canvas>
-
 <div id="eventBanner" class="event-banner hidden">
 <span class="event-icon">🎉</span>
 <span class="event-text" id="eventText">Sự kiện cuối tuần!</span>
 </div>
-
 <div id="hud">
 <div class="hud-i" id="hudGold"><div class="hud-ic gold-i">💰</div><span id="goldVal">150</span></div>
 <div class="hud-i" id="hudHp"><div class="hud-ic hp-i">❤️</div><span id="hpVal">20</span></div>
@@ -494,10 +475,8 @@ button{touch-action:manipulation}
 <button class="btn" id="pauseBtn">⏸</button>
 <button class="btn" id="menuBtn">☰</button>
 </div>
-
 <div id="shop"></div>
 <div id="tooltip"></div>
-
 <div id="towerInfo">
 <div class="st">Cấp: <b id="tLevel">1</b></div>
 <div class="st">ST: <b id="tDmg">0</b></div>
@@ -506,9 +485,7 @@ button{touch-action:manipulation}
 <button class="btn primary" id="upgradeBtn">Nâng cấp</button>
 <button class="btn" id="sellBtn">Bán (+<span id="tSell">0</span>💰)</button>
 </div>
-
 <div id="wb"></div>
-
 <div id="tut" class="hidden">
 <div class="th" id="th" style="display:none;"></div>
 <div class="tb" id="tb"></div>
@@ -984,71 +961,61 @@ const META={
   dailyQuests:{date:'',quests:[]},
   loginStreak:{lastClaim:'',streak:0,claimed:[]},
   achievements:{},
-  stats:{totalKills:0,totalGames:0,totalWins:0,totalPlaytime:0,totalGoldEarned:0,totalGemsEarned:0,highestWave:0,towerUsage:{},totalUpgrades:0,totalTowersBuilt:0,bossKills:0}
+  stats:{totalKills:0,totalGames:0,totalWins:0,totalPlaytime:0,totalGoldEarned:0,totalGemsEarned:0,highestWave:0,towerUsage:{},totalUpgrades:0,totalTowersBuilt:0,bossKills:0},
+  _v14Migrated:false,_v14MigratedAt:0
 };
 
 function metaKey(){ return currentUser ? `td_meta_${currentUser.uid}` : GK_META; }
+function getTodayStr(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function isWeekend(){
+  const d = new Date().getDay();
+  return d === 0 || d === 6;
+}
 
 /* ═══════════════════════════════════════════════════════════════
    🎯 DAILY QUESTS
    ═══════════════════════════════════════════════════════════════ */
 const QUEST_POOL = [
-  {id:'win_1',      icon:'🏆', name:'Chiến thắng',       desc:'Thắng 1 map bất kỳ',           target:1,    reward:30, key:'wins'},
-  {id:'kill_50',    icon:'⚔️', name:'Diệt địch',         desc:'Diệt 50 kẻ địch',             target:50,   reward:25, key:'kills'},
-  {id:'kill_150',   icon:'💀', name:'Tàn sát',           desc:'Diệt 150 kẻ địch',            target:150,  reward:40, key:'kills'},
-  {id:'build_15',   icon:'🔨', name:'Xây dựng',          desc:'Xây 15 tháp',                 target:15,   reward:20, key:'built'},
-  {id:'upgrade_8',  icon:'⬆️', name:'Nâng cấp',          desc:'Nâng cấp tháp 8 lần',         target:8,    reward:25, key:'upgrades'},
-  {id:'play_3',     icon:'🎮', name:'Chăm chỉ',          desc:'Chơi 3 ván',                  target:3,    reward:20, key:'games'},
-  {id:'wave_15',    icon:'🌊', name:'Sóng gió',          desc:'Đạt đợt 15 trong 1 ván',      target:15,   reward:35, key:'maxWave'},
-  {id:'no_leak',    icon:'🛡️', name:'Bất khả chiến bại', desc:'Thắng 1 map không mất máu',   target:1,    reward:60, key:'noLeakWin'},
-  {id:'kill_boss',  icon:'👹', name:'Sát boss',          desc:'Diệt 1 boss',                 target:1,    reward:30, key:'bossKills'},
-  {id:'gacha_1',    icon:'🎰', name:'Vận may',           desc:'Quay gacha 1 lần',            target:1,    reward:15, key:'gachaPulls'}
+  {id:'win_1',icon:'🏆',name:'Chiến thắng',desc:'Thắng 1 map bất kỳ',target:1,reward:30,key:'wins'},
+  {id:'kill_50',icon:'⚔️',name:'Diệt địch',desc:'Diệt 50 kẻ địch',target:50,reward:25,key:'kills'},
+  {id:'kill_150',icon:'💀',name:'Tàn sát',desc:'Diệt 150 kẻ địch',target:150,reward:40,key:'kills'},
+  {id:'build_15',icon:'🔨',name:'Xây dựng',desc:'Xây 15 tháp',target:15,reward:20,key:'built'},
+  {id:'upgrade_8',icon:'⬆️',name:'Nâng cấp',desc:'Nâng cấp tháp 8 lần',target:8,reward:25,key:'upgrades'},
+  {id:'play_3',icon:'🎮',name:'Chăm chỉ',desc:'Chơi 3 ván',target:3,reward:20,key:'games'},
+  {id:'wave_15',icon:'🌊',name:'Sóng gió',desc:'Đạt đợt 15 trong 1 ván',target:15,reward:35,key:'maxWave'},
+  {id:'no_leak',icon:'🛡️',name:'Bất khả chiến bại',desc:'Thắng 1 map không mất máu',target:1,reward:60,key:'noLeakWin'},
+  {id:'kill_boss',icon:'👹',name:'Sát boss',desc:'Diệt 1 boss',target:1,reward:30,key:'bossKills'},
+  {id:'gacha_1',icon:'🎰',name:'Vận may',desc:'Quay gacha 1 lần',target:1,reward:15,key:'gachaPulls'}
 ];
-
-function getTodayStr(){
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
-
 function generateDailyQuests(){
   const today = getTodayStr();
   if(META.dailyQuests.date === today && META.dailyQuests.quests.length > 0) return;
   const shuffled = [...QUEST_POOL].sort(() => Math.random() - 0.5);
-  const picked = shuffled.slice(0, 5).map(q => ({
-    id: q.id, icon: q.icon, name: q.name, desc: q.desc,
-    target: q.target, reward: q.reward, key: q.key,
-    progress: 0, claimed: false
-  }));
+  const picked = shuffled.slice(0, 5).map(q => ({id:q.id,icon:q.icon,name:q.name,desc:q.desc,target:q.target,reward:q.reward,key:q.key,progress:0,claimed:false}));
   META.dailyQuests = { date: today, quests: picked };
   saveMeta();
 }
-
 function trackQuest(key, amount = 1){
   if(!META.dailyQuests.quests) return;
   let changed = false;
   for(const q of META.dailyQuests.quests){
     if(q.claimed) continue;
-    if(q.key === key){
-      q.progress = Math.min(q.target, q.progress + amount);
-      changed = true;
-    }
+    if(q.key === key){ q.progress = Math.min(q.target, q.progress + amount); changed = true; }
   }
   if(changed) saveMeta();
 }
-
 function setQuestMax(key, value){
   if(!META.dailyQuests.quests) return;
   let changed = false;
   for(const q of META.dailyQuests.quests){
     if(q.claimed) continue;
-    if(q.key === key && value > q.progress){
-      q.progress = Math.min(q.target, value);
-      changed = true;
-    }
+    if(q.key === key && value > q.progress){ q.progress = Math.min(q.target, value); changed = true; }
   }
   if(changed) saveMeta();
 }
-
 function claimQuest(questId){
   const q = META.dailyQuests.quests.find(x => x.id === questId);
   if(!q || q.claimed || q.progress < q.target) return;
@@ -1062,7 +1029,6 @@ function claimQuest(questId){
   notify(`✅ +${q.reward}💎 từ nhiệm vụ!`, false, true);
   renderQuestModal();
 }
-
 function renderQuestModal(){
   generateDailyQuests();
   const list = document.getElementById('qmList');
@@ -1079,41 +1045,24 @@ function renderQuestModal(){
     const btnText = q.claimed ? '✓ ĐÃ NHẬN' : (done ? '🎁 NHẬN' : 'Chưa xong');
     const div = document.createElement('div');
     div.className = `qmc ${stateClass}`;
-    div.innerHTML = `
-      <div class="qmc-icon">${q.icon}</div>
-      <div class="qmc-body">
-        <div class="qmc-title">${q.name}</div>
-        <div class="qmc-desc">${q.desc}</div>
-        <div class="qmc-prog">
-          <span>${q.progress}/${q.target}</span>
-          <div class="qmc-prog-bar"><div class="qmc-prog-fill" style="width:${pct}%"></div></div>
-        </div>
-      </div>
-      <div style="text-align:right;">
-        <div class="qmc-reward">+${q.reward}💎</div>
-        <button class="qmc-btn ${btnClass}" data-qid="${q.id}" ${(!done || q.claimed) ? 'disabled' : ''}>${btnText}</button>
-      </div>
-    `;
+    div.innerHTML = `<div class="qmc-icon">${q.icon}</div><div class="qmc-body"><div class="qmc-title">${q.name}</div><div class="qmc-desc">${q.desc}</div><div class="qmc-prog"><span>${q.progress}/${q.target}</span><div class="qmc-prog-bar"><div class="qmc-prog-fill" style="width:${pct}%"></div></div></div></div><div style="text-align:right;"><div class="qmc-reward">+${q.reward}💎</div><button class="qmc-btn ${btnClass}" data-qid="${q.id}" ${(!done || q.claimed) ? 'disabled' : ''}>${btnText}</button></div>`;
     list.appendChild(div);
   });
-  list.querySelectorAll('[data-qid]').forEach(b => {
-    b.addEventListener('click', () => claimQuest(b.dataset.qid));
-  });
+  list.querySelectorAll('[data-qid]').forEach(b => { b.addEventListener('click', () => claimQuest(b.dataset.qid)); });
 }
 
 /* ═══════════════════════════════════════════════════════════════
    🎁 LOGIN STREAK
    ═══════════════════════════════════════════════════════════════ */
 const STREAK_REWARDS = [
-  {day:1, icon:'💎', gems:50,  label:'50💎'},
-  {day:2, icon:'💎', gems:75,  label:'75💎'},
-  {day:3, icon:'💎', gems:100, label:'100💎'},
-  {day:4, icon:'💎', gems:150, label:'150💎'},
-  {day:5, icon:'💎', gems:200, label:'200💎'},
-  {day:6, icon:'💎', gems:300, label:'300💎'},
-  {day:7, icon:'🎁', gems:500, label:'500💎 +Gacha'}
+  {day:1,icon:'💎',gems:50,label:'50💎'},
+  {day:2,icon:'💎',gems:75,label:'75💎'},
+  {day:3,icon:'💎',gems:100,label:'100💎'},
+  {day:4,icon:'💎',gems:150,label:'150💎'},
+  {day:5,icon:'💎',gems:200,label:'200💎'},
+  {day:6,icon:'💎',gems:300,label:'300💎'},
+  {day:7,icon:'🎁',gems:500,label:'500💎 +Gacha'}
 ];
-
 function checkStreakReset(){
   const today = getTodayStr();
   const last = META.loginStreak.lastClaim;
@@ -1121,23 +1070,11 @@ function checkStreakReset(){
   const lastDate = new Date(last + 'T00:00:00');
   const todayDate = new Date(today + 'T00:00:00');
   const diffDays = Math.floor((todayDate - lastDate) / (1000*60*60*24));
-  if(diffDays > 1){
-    META.loginStreak.streak = 0;
-    META.loginStreak.claimed = [];
-  }
-  if(diffDays === 1 && META.loginStreak.streak >= 7){
-    META.loginStreak.streak = 0;
-    META.loginStreak.claimed = [];
-  }
+  if(diffDays > 1){ META.loginStreak.streak = 0; META.loginStreak.claimed = []; }
+  if(diffDays === 1 && META.loginStreak.streak >= 7){ META.loginStreak.streak = 0; META.loginStreak.claimed = []; }
   saveMeta();
 }
-
-function canClaimStreak(){
-  checkStreakReset();
-  const today = getTodayStr();
-  return META.loginStreak.lastClaim !== today;
-}
-
+function canClaimStreak(){ checkStreakReset(); return META.loginStreak.lastClaim !== getTodayStr(); }
 function claimStreak(){
   if(!canClaimStreak()){ notify('Bạn đã nhận hôm nay rồi!'); return; }
   const today = getTodayStr();
@@ -1148,7 +1085,7 @@ function claimStreak(){
   META.loginStreak.lastClaim = today;
   META.loginStreak.claimed.push(nextDay);
   let totalGems = reward.gems;
-  if(reward.day === 7) totalGems += 50; // Free gacha bonus
+  if(reward.day === 7) totalGems += 50;
   META.gems += totalGems;
   META.stats.totalGemsEarned = (META.stats.totalGemsEarned || 0) + totalGems;
   saveMeta();
@@ -1159,7 +1096,6 @@ function claimStreak(){
   renderStreakModal();
   checkAchievements();
 }
-
 function renderStreakModal(){
   const grid = document.getElementById('stkGrid');
   grid.innerHTML = '';
@@ -1171,16 +1107,10 @@ function renderStreakModal(){
     const isToday = canClaim && dayNum === META.loginStreak.streak + 1;
     const locked = !claimed && !isToday;
     let cls = 'stk-day';
-    if(claimed) cls += ' claimed';
-    else if(isToday) cls += ' today';
-    else if(locked) cls += ' locked';
+    if(claimed) cls += ' claimed'; else if(isToday) cls += ' today'; else if(locked) cls += ' locked';
     const div = document.createElement('div');
     div.className = cls;
-    div.innerHTML = `
-      <div class="stk-day-num">Ngày ${dayNum}</div>
-      <div class="stk-day-icon">${reward.icon}</div>
-      <div class="stk-day-reward">${reward.label}</div>
-    `;
+    div.innerHTML = `<div class="stk-day-num">Ngày ${dayNum}</div><div class="stk-day-icon">${reward.icon}</div><div class="stk-day-reward">${reward.label}</div>`;
     grid.appendChild(div);
   }
   const btn = document.getElementById('stkClaim');
@@ -1191,52 +1121,42 @@ function renderStreakModal(){
 /* ═══════════════════════════════════════════════════════════════
    📅 WEEKEND EVENTS
    ═══════════════════════════════════════════════════════════════ */
-function isWeekend(){
-  const d = new Date().getDay();
-  return d === 0 || d === 6;
-}
-
 function updateEventBanner(){
   const banner = document.getElementById('eventBanner');
   const text = document.getElementById('eventText');
-  if(isWeekend()){
-    banner.classList.remove('hidden');
-    text.textContent = 'X2 GEM từ chiến thắng! (Cuối tuần)';
-  } else {
-    banner.classList.add('hidden');
-  }
+  if(isWeekend()){ banner.classList.remove('hidden'); text.textContent = 'X2 GEM từ chiến thắng! (Cuối tuần)'; }
+  else { banner.classList.add('hidden'); }
 }
 
 /* ═══════════════════════════════════════════════════════════════
    🏅 ACHIEVEMENTS
    ═══════════════════════════════════════════════════════════════ */
 const ACHIEVEMENTS = [
-  {id:'first_win',   icon:'🏆', cat:'battle', name:'Chiến thắng đầu tiên', desc:'Thắng 1 map', target:1,    reward:50,  key:'totalWins'},
-  {id:'win_5',       icon:'🥈', cat:'battle', name:'Chiến binh tập sự',   desc:'Thắng 5 map', target:5,    reward:100, key:'totalWins'},
-  {id:'win_20',      icon:'🥇', cat:'battle', name:'Danh tướng',          desc:'Thắng 20 map', target:20,  reward:300, key:'totalWins'},
-  {id:'kill_100',    icon:'⚔️', cat:'battle', name:'Diệt địch I',         desc:'Diệt 100 địch', target:100, reward:50,  key:'totalKills'},
-  {id:'kill_1000',   icon:'🗡️', cat:'battle', name:'Diệt địch II',        desc:'Diệt 1000 địch', target:1000, reward:150, key:'totalKills'},
-  {id:'kill_10000',  icon:'💀', cat:'battle', name:'Tử thần',             desc:'Diệt 10000 địch', target:10000, reward:500, key:'totalKills'},
-  {id:'build_50',    icon:'🔨', cat:'battle', name:'Thợ xây',             desc:'Xây 50 tháp', target:50,  reward:75,  key:'totalTowersBuilt'},
-  {id:'build_200',   icon:'🏗️', cat:'battle', name:'Kiến trúc sư',        desc:'Xây 200 tháp', target:200, reward:200, key:'totalTowersBuilt'},
-  {id:'upgrade_100', icon:'⬆️', cat:'battle', name:'Nâng cấp thần tốc',   desc:'Nâng cấp 100 lần', target:100, reward:150, key:'totalUpgrades'},
-  {id:'wave_50',     icon:'🌊', cat:'battle', name:'Sóng gió',            desc:'Đạt đợt 50 (kỷ lục)', target:50, reward:200, key:'highestWave'},
-  {id:'skin_5',      icon:'✨', cat:'collection', name:'Nhà sưu tầm',      desc:'Sở hữu 5 skin', target:5,  reward:50,  key:'totalSkins'},
-  {id:'skin_15',     icon:'💫', cat:'collection', name:'Bộ sưu tập',       desc:'Sở hữu 15 skin', target:15, reward:200, key:'totalSkins'},
-  {id:'skin_30',     icon:'🌟', cat:'collection', name:'Bậc thầy skin',    desc:'Sở hữu 30 skin', target:30, reward:500, key:'totalSkins'},
-  {id:'gacha_10',    icon:'🎰', cat:'collection', name:'Con bạc',          desc:'Quay gacha 10 lần', target:10, reward:60,  key:'totalGacha'},
-  {id:'gacha_100',   icon:'🎲', cat:'collection', name:'Vua may mắn',      desc:'Quay gacha 100 lần', target:100, reward:400, key:'totalGacha'},
-  {id:'premium_1',   icon:'⚡', cat:'collection', name:'Nâng cấp cao cấp', desc:'Mua 1 tháp premium', target:1, reward:150, key:'totalPremium'},
-  {id:'premium_all', icon:'👑', cat:'collection', name:'Đại gia',          desc:'Mua tất cả tháp premium', target:4, reward:1000, key:'totalPremium'},
-  {id:'theme_all',   icon:'🎨', cat:'collection', name:'Nhà thiết kế',     desc:'Mở khoá tất cả theme', target:8, reward:300, key:'totalThemes'},
-  {id:'streak_3',    icon:'📅', cat:'progress', name:'Điểm danh 3 ngày',  desc:'Streak 3 ngày liên tiếp', target:3,  reward:50,  key:'maxStreak'},
-  {id:'streak_7',    icon:'🔥', cat:'progress', name:'Điểm danh 7 ngày',  desc:'Streak 7 ngày liên tiếp', target:7,  reward:200, key:'maxStreak'},
-  {id:'map_5',       icon:'🗺️', cat:'progress', name:'Nhà thám hiểm',     desc:'Thắng 5 map khác nhau', target:5,  reward:250, key:'mapsCompleted'},
-  {id:'map_9',       icon:'🌍', cat:'progress', name:'Chinh phục',        desc:'Thắng cả 9 map', target:9,  reward:800, key:'mapsCompleted'},
-  {id:'playtime_1h', icon:'⏱️', cat:'progress', name:'Nhập môn',          desc:'Chơi 1 giờ', target:3600, reward:100, key:'totalPlaytime'},
-  {id:'playtime_5h', icon:'⏰', cat:'progress', name:'Nghiện rồi!',       desc:'Chơi 5 giờ', target:18000, reward:500, key:'totalPlaytime'}
+  {id:'first_win',icon:'🏆',cat:'battle',name:'Chiến thắng đầu tiên',desc:'Thắng 1 map',target:1,reward:50,key:'totalWins'},
+  {id:'win_5',icon:'🥈',cat:'battle',name:'Chiến binh tập sự',desc:'Thắng 5 map',target:5,reward:100,key:'totalWins'},
+  {id:'win_20',icon:'🥇',cat:'battle',name:'Danh tướng',desc:'Thắng 20 map',target:20,reward:300,key:'totalWins'},
+  {id:'kill_100',icon:'⚔️',cat:'battle',name:'Diệt địch I',desc:'Diệt 100 địch',target:100,reward:50,key:'totalKills'},
+  {id:'kill_1000',icon:'🗡️',cat:'battle',name:'Diệt địch II',desc:'Diệt 1000 địch',target:1000,reward:150,key:'totalKills'},
+  {id:'kill_10000',icon:'💀',cat:'battle',name:'Tử thần',desc:'Diệt 10000 địch',target:10000,reward:500,key:'totalKills'},
+  {id:'build_50',icon:'🔨',cat:'battle',name:'Thợ xây',desc:'Xây 50 tháp',target:50,reward:75,key:'totalTowersBuilt'},
+  {id:'build_200',icon:'🏗️',cat:'battle',name:'Kiến trúc sư',desc:'Xây 200 tháp',target:200,reward:200,key:'totalTowersBuilt'},
+  {id:'upgrade_100',icon:'⬆️',cat:'battle',name:'Nâng cấp thần tốc',desc:'Nâng cấp 100 lần',target:100,reward:150,key:'totalUpgrades'},
+  {id:'wave_50',icon:'🌊',cat:'battle',name:'Sóng gió',desc:'Đạt đợt 50 (kỷ lục)',target:50,reward:200,key:'highestWave'},
+  {id:'skin_5',icon:'✨',cat:'collection',name:'Nhà sưu tầm',desc:'Sở hữu 5 skin',target:5,reward:50,key:'totalSkins'},
+  {id:'skin_15',icon:'💫',cat:'collection',name:'Bộ sưu tập',desc:'Sở hữu 15 skin',target:15,reward:200,key:'totalSkins'},
+  {id:'skin_30',icon:'🌟',cat:'collection',name:'Bậc thầy skin',desc:'Sở hữu 30 skin',target:30,reward:500,key:'totalSkins'},
+  {id:'gacha_10',icon:'🎰',cat:'collection',name:'Con bạc',desc:'Quay gacha 10 lần',target:10,reward:60,key:'totalGacha'},
+  {id:'gacha_100',icon:'🎲',cat:'collection',name:'Vua may mắn',desc:'Quay gacha 100 lần',target:100,reward:400,key:'totalGacha'},
+  {id:'premium_1',icon:'⚡',cat:'collection',name:'Nâng cấp cao cấp',desc:'Mua 1 tháp premium',target:1,reward:150,key:'totalPremium'},
+  {id:'premium_all',icon:'👑',cat:'collection',name:'Đại gia',desc:'Mua tất cả tháp premium',target:4,reward:1000,key:'totalPremium'},
+  {id:'theme_all',icon:'🎨',cat:'collection',name:'Nhà thiết kế',desc:'Mở khoá tất cả theme',target:8,reward:300,key:'totalThemes'},
+  {id:'streak_3',icon:'📅',cat:'progress',name:'Điểm danh 3 ngày',desc:'Streak 3 ngày liên tiếp',target:3,reward:50,key:'maxStreak'},
+  {id:'streak_7',icon:'🔥',cat:'progress',name:'Điểm danh 7 ngày',desc:'Streak 7 ngày liên tiếp',target:7,reward:200,key:'maxStreak'},
+  {id:'map_5',icon:'🗺️',cat:'progress',name:'Nhà thám hiểm',desc:'Thắng 5 map khác nhau',target:5,reward:250,key:'mapsCompleted'},
+  {id:'map_9',icon:'🌍',cat:'progress',name:'Chinh phục',desc:'Thắng cả 9 map',target:9,reward:800,key:'mapsCompleted'},
+  {id:'playtime_1h',icon:'⏱️',cat:'progress',name:'Nhập môn',desc:'Chơi 1 giờ',target:3600,reward:100,key:'totalPlaytime'},
+  {id:'playtime_5h',icon:'⏰',cat:'progress',name:'Nghiện rồi!',desc:'Chơi 5 giờ',target:18000,reward:500,key:'totalPlaytime'}
 ];
-
 function getAchievementProgress(ach){
   const s = META.stats || {};
   switch(ach.key){
@@ -1255,13 +1175,11 @@ function getAchievementProgress(ach){
     default: return 0;
   }
 }
-
 function checkAchievements(){
   let newlyUnlocked = [];
   for(const ach of ACHIEVEMENTS){
     if(META.achievements[ach.id]) continue;
-    const progress = getAchievementProgress(ach);
-    if(progress >= ach.target){
+    if(getAchievementProgress(ach) >= ach.target){
       META.achievements[ach.id] = Date.now();
       META.gems += ach.reward;
       META.stats.totalGemsEarned = (META.stats.totalGemsEarned || 0) + ach.reward;
@@ -1272,30 +1190,17 @@ function checkAchievements(){
     saveMeta();
     updateGemDisplay();
     bumpHud('hudGem');
-    newlyUnlocked.forEach((ach, i) => {
-      setTimeout(() => showAchievementToast(ach), i * 1200);
-    });
+    newlyUnlocked.forEach((ach, i) => { setTimeout(() => showAchievementToast(ach), i * 1200); });
   }
 }
-
 function showAchievementToast(ach){
   const toast = document.createElement('div');
   toast.className = 'ach-toast';
-  toast.innerHTML = `
-    <div class="ach-toast-icon">${ach.icon}</div>
-    <div class="ach-toast-body">
-      <div class="ach-toast-title">🏅 THÀNH TỰU MỞ KHOÁ</div>
-      <div class="ach-toast-name">${ach.name} <span style="color:#d9480f">+${ach.reward}💎</span></div>
-    </div>
-  `;
+  toast.innerHTML = `<div class="ach-toast-icon">${ach.icon}</div><div class="ach-toast-body"><div class="ach-toast-title">🏅 THÀNH TỰU MỞ KHOÁ</div><div class="ach-toast-name">${ach.name} <span style="color:#d9480f">+${ach.reward}💎</span></div></div>`;
   document.body.appendChild(toast);
   Sound.play('migrate');
-  setTimeout(() => {
-    toast.classList.add('out');
-    setTimeout(() => toast.remove(), 500);
-  }, 3500);
+  setTimeout(() => { toast.classList.add('out'); setTimeout(() => toast.remove(), 500); }, 3500);
 }
-
 let currentAchCat = 'all';
 function renderAchievementModal(){
   const list = document.getElementById('amList');
@@ -1309,15 +1214,7 @@ function renderAchievementModal(){
     const progress = Math.min(ach.target, getAchievementProgress(ach));
     const div = document.createElement('div');
     div.className = `amc ${isUnlocked ? 'unlocked' : 'locked'}`;
-    div.innerHTML = `
-      <div class="amc-icon">${isUnlocked ? ach.icon : '🔒'}</div>
-      <div class="amc-body">
-        <div class="amc-title">${ach.name}</div>
-        <div class="amc-desc">${ach.desc}</div>
-        <div class="amc-prog">Tiến độ: <b>${progress}</b>/${ach.target} ${isUnlocked ? '· <span style="color:var(--ok)">✓ Đã mở</span>' : ''}</div>
-      </div>
-      <div class="amc-reward">+${ach.reward}💎</div>
-    `;
+    div.innerHTML = `<div class="amc-icon">${isUnlocked ? ach.icon : '🔒'}</div><div class="amc-body"><div class="amc-title">${ach.name}</div><div class="amc-desc">${ach.desc}</div><div class="amc-prog">Tiến độ: <b>${progress}</b>/${ach.target} ${isUnlocked ? '· <span style="color:var(--ok)">✓ Đã mở</span>' : ''}</div></div><div class="amc-reward">+${ach.reward}💎</div>`;
     list.appendChild(div);
   });
 }
@@ -1335,47 +1232,106 @@ function renderStatsModal(){
   const totalSkins = (META.ownedSkins?.length || 0) + Object.values(META.ownedTroopSkins || {}).reduce((a,b) => a + b.length, 0);
   const unlockedAch = Object.keys(META.achievements || {}).length;
   content.innerHTML = `
-    <div class="sm-sec">
-      <div class="sm-title">⚔️ Chiến đấu</div>
-      <div class="sm-grid">
-        <div class="sm-stat"><div class="sm-stat-icon">🎮</div><div class="sm-stat-label">Ván đã chơi</div><div class="sm-stat-value">${s.totalGames || 0}</div></div>
-        <div class="sm-stat"><div class="sm-stat-icon">🏆</div><div class="sm-stat-label">Chiến thắng</div><div class="sm-stat-value ok">${s.totalWins || 0}</div></div>
-        <div class="sm-stat"><div class="sm-stat-icon">📈</div><div class="sm-stat-label">Tỉ lệ thắng</div><div class="sm-stat-value gold">${winRate}%</div></div>
-        <div class="sm-stat"><div class="sm-stat-icon">🌊</div><div class="sm-stat-label">Đợt cao nhất</div><div class="sm-stat-value gold">${s.highestWave || 0}</div></div>
-        <div class="sm-stat"><div class="sm-stat-icon">⚔️</div><div class="sm-stat-label">Tổng kills</div><div class="sm-stat-value">${(s.totalKills || 0).toLocaleString()}</div></div>
-        <div class="sm-stat"><div class="sm-stat-icon">⏱️</div><div class="sm-stat-label">Thời gian chơi</div><div class="sm-stat-value">${playtimeStr}</div></div>
-      </div>
-    </div>
-    <div class="sm-sec">
-      <div class="sm-title">🔨 Xây dựng</div>
-      <div class="sm-grid">
-        <div class="sm-stat"><div class="sm-stat-icon">🏗️</div><div class="sm-stat-label">Tháp đã xây</div><div class="sm-stat-value">${s.totalTowersBuilt || 0}</div></div>
-        <div class="sm-stat"><div class="sm-stat-icon">⬆️</div><div class="sm-stat-label">Lần nâng cấp</div><div class="sm-stat-value">${s.totalUpgrades || 0}</div></div>
-      </div>
-    </div>
-    <div class="sm-sec">
-      <div class="sm-title">💎 Sưu tầm</div>
-      <div class="sm-grid">
-        <div class="sm-stat"><div class="sm-stat-icon">✨</div><div class="sm-stat-label">Skin sở hữu</div><div class="sm-stat-value gem">${totalSkins}</div></div>
-        <div class="sm-stat"><div class="sm-stat-icon">⚡</div><div class="sm-stat-label">Tháp premium</div><div class="sm-stat-value gem">${META.ownedPremium?.length || 0}/4</div></div>
-        <div class="sm-stat"><div class="sm-stat-icon">🎨</div><div class="sm-stat-label">Theme mở khoá</div><div class="sm-stat-value gem">${META.unlockedThemes?.length || 0}/8</div></div>
-        <div class="sm-stat"><div class="sm-stat-icon">🗺️</div><div class="sm-stat-label">Map đã thắng</div><div class="sm-stat-value ok">${META.completedMaps?.length || 0}/9</div></div>
-        <div class="sm-stat"><div class="sm-stat-icon">🏅</div><div class="sm-stat-label">Thành tựu</div><div class="sm-stat-value gold">${unlockedAch}/${ACHIEVEMENTS.length}</div></div>
-        <div class="sm-stat"><div class="sm-stat-icon">🔥</div><div class="sm-stat-label">Streak hiện tại</div><div class="sm-stat-value">${META.loginStreak?.streak || 0} ngày</div></div>
-      </div>
-    </div>
-    <div class="sm-sec">
-      <div class="sm-title">💰 Kinh tế</div>
-      <div class="sm-grid">
-        <div class="sm-stat"><div class="sm-stat-icon">💎</div><div class="sm-stat-label">Tổng gem kiếm</div><div class="sm-stat-value gem">${(s.totalGemsEarned || 0).toLocaleString()}</div></div>
-        <div class="sm-stat"><div class="sm-stat-icon">💰</div><div class="sm-stat-label">Gem hiện có</div><div class="sm-stat-value gold">${META.gems}</div></div>
-        <div class="sm-stat"><div class="sm-stat-icon">🎰</div><div class="sm-stat-label">Tổng quay gacha</div><div class="sm-stat-value">${(META.totalPulls || 0) + (META.troopPulls || 0)}</div></div>
-      </div>
-    </div>
-  `;
+    <div class="sm-sec"><div class="sm-title">⚔️ Chiến đấu</div><div class="sm-grid">
+      <div class="sm-stat"><div class="sm-stat-icon">🎮</div><div class="sm-stat-label">Ván đã chơi</div><div class="sm-stat-value">${s.totalGames || 0}</div></div>
+      <div class="sm-stat"><div class="sm-stat-icon">🏆</div><div class="sm-stat-label">Chiến thắng</div><div class="sm-stat-value ok">${s.totalWins || 0}</div></div>
+      <div class="sm-stat"><div class="sm-stat-icon">📈</div><div class="sm-stat-label">Tỉ lệ thắng</div><div class="sm-stat-value gold">${winRate}%</div></div>
+      <div class="sm-stat"><div class="sm-stat-icon">🌊</div><div class="sm-stat-label">Đợt cao nhất</div><div class="sm-stat-value gold">${s.highestWave || 0}</div></div>
+      <div class="sm-stat"><div class="sm-stat-icon">⚔️</div><div class="sm-stat-label">Tổng kills</div><div class="sm-stat-value">${(s.totalKills || 0).toLocaleString()}</div></div>
+      <div class="sm-stat"><div class="sm-stat-icon">⏱️</div><div class="sm-stat-label">Thời gian chơi</div><div class="sm-stat-value">${playtimeStr}</div></div>
+    </div></div>
+    <div class="sm-sec"><div class="sm-title">🔨 Xây dựng</div><div class="sm-grid">
+      <div class="sm-stat"><div class="sm-stat-icon">🏗️</div><div class="sm-stat-label">Tháp đã xây</div><div class="sm-stat-value">${s.totalTowersBuilt || 0}</div></div>
+      <div class="sm-stat"><div class="sm-stat-icon">⬆️</div><div class="sm-stat-label">Lần nâng cấp</div><div class="sm-stat-value">${s.totalUpgrades || 0}</div></div>
+    </div></div>
+    <div class="sm-sec"><div class="sm-title">💎 Sưu tầm</div><div class="sm-grid">
+      <div class="sm-stat"><div class="sm-stat-icon">✨</div><div class="sm-stat-label">Skin sở hữu</div><div class="sm-stat-value gem">${totalSkins}</div></div>
+      <div class="sm-stat"><div class="sm-stat-icon">⚡</div><div class="sm-stat-label">Tháp premium</div><div class="sm-stat-value gem">${META.ownedPremium?.length || 0}/4</div></div>
+      <div class="sm-stat"><div class="sm-stat-icon">🎨</div><div class="sm-stat-label">Theme mở khoá</div><div class="sm-stat-value gem">${META.unlockedThemes?.length || 0}/8</div></div>
+      <div class="sm-stat"><div class="sm-stat-icon">🗺️</div><div class="sm-stat-label">Map đã thắng</div><div class="sm-stat-value ok">${META.completedMaps?.length || 0}/9</div></div>
+      <div class="sm-stat"><div class="sm-stat-icon">🏅</div><div class="sm-stat-label">Thành tựu</div><div class="sm-stat-value gold">${unlockedAch}/${ACHIEVEMENTS.length}</div></div>
+      <div class="sm-stat"><div class="sm-stat-icon">🔥</div><div class="sm-stat-label">Streak</div><div class="sm-stat-value">${META.loginStreak?.streak || 0} ngày</div></div>
+    </div></div>
+    <div class="sm-sec"><div class="sm-title">💰 Kinh tế</div><div class="sm-grid">
+      <div class="sm-stat"><div class="sm-stat-icon">💎</div><div class="sm-stat-label">Tổng gem kiếm</div><div class="sm-stat-value gem">${(s.totalGemsEarned || 0).toLocaleString()}</div></div>
+      <div class="sm-stat"><div class="sm-stat-icon">💰</div><div class="sm-stat-label">Gem hiện có</div><div class="sm-stat-value gold">${META.gems}</div></div>
+      <div class="sm-stat"><div class="sm-stat-icon">🎰</div><div class="sm-stat-label">Tổng quay</div><div class="sm-stat-value">${(META.totalPulls || 0) + (META.troopPulls || 0)}</div></div>
+    </div></div>`;
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   🔄 BACKFILL v14 — Khôi phục dữ liệu cũ
+   ═══════════════════════════════════════════════════════════════ */
+function backfillV14Data(){
+  if(META._v14Migrated) return false;
+  const hasLegacy = (META.completedMaps && META.completedMaps.length > 0) ||
+    (META.ownedSkins && META.ownedSkins.length > 0) ||
+    (META.ownedPremium && META.ownedPremium.length > 0) ||
+    (META.totalPulls && META.totalPulls > 0) ||
+    (META.unlockedThemes && META.unlockedThemes.length > 2);
+  if(!hasLegacy){ META._v14Migrated = true; saveMeta(); return false; }
+  console.log('🔄 Backfilling v14...');
+  if(!META.stats) META.stats = {};
+  const s = META.stats;
+  const completed = (META.completedMaps || []).length;
+  const totalPulls = (META.totalPulls || 0) + (META.troopPulls || 0);
+  if(!s.totalWins || s.totalWins < completed) s.totalWins = Math.max(s.totalWins || 0, Math.floor(completed * 1.8));
+  if(!s.totalGames || s.totalGames < s.totalWins) s.totalGames = Math.max(s.totalGames || 0, Math.floor(s.totalWins * 2.5) + 5);
+  if(!s.highestWave && completed > 0) s.highestWave = 20;
+  if(!s.totalKills || s.totalKills < s.totalWins * 100){ s.totalKills = Math.max(s.totalKills || 0, Math.floor(s.totalWins * 250 + Math.max(0, s.totalGames - s.totalWins) * 80)); }
+  if(!s.totalTowersBuilt || s.totalTowersBuilt < s.totalGames * 3) s.totalTowersBuilt = Math.max(s.totalTowersBuilt || 0, s.totalGames * 8);
+  if(!s.totalUpgrades || s.totalUpgrades < s.totalGames * 4) s.totalUpgrades = Math.max(s.totalUpgrades || 0, s.totalGames * 10);
+  if(!s.totalPlaytime || s.totalPlaytime < s.totalGames * 100) s.totalPlaytime = Math.max(s.totalPlaytime || 0, s.totalGames * 240);
+  if(!s.totalGemsEarned){ s.totalGemsEarned = META.gems + totalPulls * 50 + (META.ownedPremium || []).reduce((t,k) => t + (PT[k]?.gemPrice || 0), 0); }
+  if(!s.bossKills && completed > 0) s.bossKills = s.totalWins;
+  META._v14Migrated = true;
+  META._v14MigratedAt = Date.now();
+  saveMeta();
+  const before = Object.keys(META.achievements || {}).length;
+  checkAchievements();
+  const unlocked = Object.keys(META.achievements || {}).length - before;
+  setTimeout(() => showV14WelcomeBack(unlocked), 800);
+  console.log(`✅ Backfill xong! ${unlocked} achievements unlocked.`);
+  return true;
+}
+function showV14WelcomeBack(unlockedCount){
+  const existing = document.getElementById('welcomeV14');
+  if(existing) existing.remove();
+  const s = META.stats || {};
+  const hours = Math.floor((s.totalPlaytime || 0) / 3600);
+  const minutes = Math.floor(((s.totalPlaytime || 0) % 3600) / 60);
+  const playtimeStr = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+  const modal = document.createElement('div');
+  modal.id = 'welcomeV14';
+  modal.style.cssText = `position:fixed;inset:0;z-index:99998;background:radial-gradient(circle at center,rgba(10,15,30,.92),rgba(5,8,18,.98));display:flex;align-items:center;justify-content:center;animation:fadeIn .4s ease;padding:20px;`;
+  modal.innerHTML = `
+    <div style="max-width:520px;width:92vw;padding:28px;background:linear-gradient(180deg,#1a2540,#0f1730);border:2px solid var(--gold);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.9),0 0 60px rgba(255,212,59,.3);text-align:center;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);">
+      <div style="font-size:56px;margin-bottom:8px;">🎉</div>
+      <div style="font-size:24px;font-weight:900;background:linear-gradient(180deg,#ffe066,#f59f00);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:1px;margin-bottom:6px;">CHÀO MỪNG TRỞ LẠI!</div>
+      <div style="font-size:12px;color:var(--dim);letter-spacing:1px;margin-bottom:20px;">BẢN CẬP NHẬT V14 ĐÃ PHÂN TÍCH TIẾN TRÌNH</div>
+      <div style="padding:14px 16px;margin-bottom:16px;border-radius:12px;background:linear-gradient(135deg,rgba(192,132,252,.15),rgba(77,171,247,.1));border:1px solid rgba(192,132,252,.3);text-align:left;">
+        <div style="font-size:11px;color:var(--gem);font-weight:800;letter-spacing:1px;margin-bottom:10px;">📊 THỐNG KÊ ĐÃ KHÔI PHỤC</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px;">
+          <div style="display:flex;justify-content:space-between;color:var(--mid);"><span>🏆 Wins</span><b style="color:var(--gold);">${s.totalWins || 0}</b></div>
+          <div style="display:flex;justify-content:space-between;color:var(--mid);"><span>🎮 Games</span><b style="color:var(--gold);">${s.totalGames || 0}</b></div>
+          <div style="display:flex;justify-content:space-between;color:var(--mid);"><span>⚔️ Kills</span><b style="color:var(--gold);">${(s.totalKills || 0).toLocaleString()}</b></div>
+          <div style="display:flex;justify-content:space-between;color:var(--mid);"><span>⏱️ Time</span><b style="color:var(--gold);">${playtimeStr}</b></div>
+          <div style="display:flex;justify-content:space-between;color:var(--mid);"><span>🌊 Wave</span><b style="color:var(--gold);">${s.highestWave || 0}</b></div>
+          <div style="display:flex;justify-content:space-between;color:var(--mid);"><span>🔨 Towers</span><b style="color:var(--gold);">${s.totalTowersBuilt || 0}</b></div>
+        </div>
+      </div>
+      ${unlockedCount > 0 ? `<div style="padding:14px 16px;margin-bottom:16px;border-radius:12px;background:linear-gradient(135deg,rgba(255,212,59,.15),rgba(245,159,0,.1));border:1px solid rgba(255,212,59,.4);"><div style="font-size:11px;color:var(--gold);font-weight:800;letter-spacing:1px;margin-bottom:8px;">🏅 THÀNH TỰU TỰ ĐỘNG MỞ KHOÁ</div><div style="font-size:20px;font-weight:900;color:var(--gold);">${unlockedCount} thành tựu</div><div style="font-size:11px;color:var(--mid);margin-top:4px;">Xem tab <b style="color:var(--gold);">🏅 Thành tựu</b> để chi tiết</div></div>` : ''}
+      <div style="padding:10px 14px;margin-bottom:18px;border-radius:10px;background:rgba(81,207,102,.1);border:1px solid rgba(81,207,102,.3);font-size:11px;color:var(--ok);line-height:1.5;">✅ Gem, skins, tháp premium, theme, map đã thắng — <b>tất cả vẫn nguyên vẹn</b></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button id="v14Close" class="btn primary" style="padding:14px 36px;font-size:15px;min-height:48px;">✓ BẮT ĐẦU CHƠI</button>
+        <button id="v14ViewAch" class="btn" style="padding:14px 24px;font-size:14px;min-height:48px;">🏅 Xem thành tựu</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  document.getElementById('v14Close').addEventListener('click', () => { modal.style.animation = 'fadeIn .3s ease reverse'; setTimeout(() => modal.remove(), 300); Sound.play('click'); });
+  document.getElementById('v14ViewAch').addEventListener('click', () => { modal.remove(); Sound.play('click'); renderAchievementModal(); document.getElementById('achModal').classList.remove('hidden'); });
+}
+ /* ═══════════════════════════════════════════════════════════════
    CLOUD SYNC
    ═══════════════════════════════════════════════════════════════ */
 let cloudSaveTimer=null;
@@ -1393,6 +1349,7 @@ function cloudSaveMeta(){
         troopPity:META.troopPity,troopPulls:META.troopPulls,
         dailyQuests:META.dailyQuests,loginStreak:META.loginStreak,
         achievements:META.achievements,stats:META.stats,
+        _v14Migrated:META._v14Migrated,_v14MigratedAt:META._v14MigratedAt,
         updatedAt:firebase.firestore.FieldValue.serverTimestamp()
       },{merge:true});
     }catch(e){}
@@ -1413,7 +1370,8 @@ function saveMeta(){
       ownedTroopSkins:META.ownedTroopSkins,equippedTroopSkins:META.equippedTroopSkins,
       troopPity:META.troopPity,troopPulls:META.troopPulls,
       dailyQuests:META.dailyQuests,loginStreak:META.loginStreak,
-      achievements:META.achievements,stats:META.stats
+      achievements:META.achievements,stats:META.stats,
+      _v14Migrated:META._v14Migrated,_v14MigratedAt:META._v14MigratedAt
     }));
   }catch(e){}
   cloudSaveMeta();
@@ -1431,6 +1389,8 @@ function applyMeta(d){
   META.loginStreak=d.loginStreak||{lastClaim:'',streak:0,claimed:[]};
   META.achievements=d.achievements||{};
   META.stats=d.stats||{totalKills:0,totalGames:0,totalWins:0,totalPlaytime:0,totalGoldEarned:0,totalGemsEarned:0,highestWave:0,towerUsage:{},totalUpgrades:0,totalTowersBuilt:0,bossKills:0};
+  META._v14Migrated=d._v14Migrated||false;
+  META._v14MigratedAt=d._v14MigratedAt||0;
   if(!META.unlockedThemes.includes('dark')) META.unlockedThemes.push('dark');
   if(!META.unlockedThemes.includes('light')) META.unlockedThemes.push('light');
   if(!META.unlockedThemes.includes(Theme.cur)){Theme.cur='dark';localStorage.setItem(Theme.k,'dark');Theme.apply();}
@@ -1487,7 +1447,9 @@ function migrate(uid){
         stats:(()=>{
           const a=gm.stats||{},b=um.stats||{};
           return {totalKills:(a.totalKills||0)+(b.totalKills||0),totalGames:(a.totalGames||0)+(b.totalGames||0),totalWins:(a.totalWins||0)+(b.totalWins||0),totalPlaytime:(a.totalPlaytime||0)+(b.totalPlaytime||0),totalGoldEarned:(a.totalGoldEarned||0)+(b.totalGoldEarned||0),totalGemsEarned:(a.totalGemsEarned||0)+(b.totalGemsEarned||0),highestWave:Math.max(a.highestWave||0,b.highestWave||0),towerUsage:{...a.towerUsage,...b.towerUsage},totalUpgrades:(a.totalUpgrades||0)+(b.totalUpgrades||0),totalTowersBuilt:(a.totalTowersBuilt||0)+(b.totalTowersBuilt||0),bossKills:(a.bossKills||0)+(b.bossKills||0)};
-        })()
+        })(),
+        _v14Migrated:(gm._v14Migrated||false)||(um._v14Migrated||false),
+        _v14MigratedAt:Math.max(gm._v14MigratedAt||0,um._v14MigratedAt||0)
       };
       localStorage.setItem(uk,JSON.stringify(merged));localStorage.removeItem(GK_META);res.meta=merged;
     }
@@ -1548,7 +1510,6 @@ class Enemy{
     const gm=1+(getBonus()?.goldBonus||0);
     const gain=Math.floor(this.reward*gm);
     G.gold+=gain;updateHUD();bumpHud('hudGold');
-    // Stats tracking
     META.stats.totalKills = (META.stats.totalKills || 0) + 1;
     if(this.boss) META.stats.bossKills = (META.stats.bossKills || 0) + 1;
     META.stats.totalGoldEarned = (META.stats.totalGoldEarned || 0) + gain;
@@ -1704,7 +1665,7 @@ function emitSkillEffect(x,y,effect,color){
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   PROJECTILE / EFFECTS
+   PROJECTILE / PARTICLES / EFFECTS
    ═══════════════════════════════════════════════════════════════ */
 class Proj{
   constructor(x,y,target,tower){
@@ -1848,7 +1809,6 @@ function placeTower(type,gx,gy){
   G.occupied.add(k);
   updateHUD();bumpHud('hudGold');
   Sound.play('place');
-  // Stats
   META.stats.totalTowersBuilt=(META.stats.totalTowersBuilt||0)+1;
   META.stats.towerUsage[type]=(META.stats.towerUsage[type]||0)+1;
   trackQuest('built',1);
@@ -1974,7 +1934,6 @@ document.getElementById('shakeBtn').addEventListener('click',()=>Shake.toggle())
 document.getElementById('tmClose').addEventListener('click',closeThemeModal);
 document.getElementById('themeModal').addEventListener('click',e=>{if(e.target.id==='themeModal') closeThemeModal();});
 
-// V14 buttons
 document.getElementById('questBtn').addEventListener('click',()=>{Sound.play('click');renderQuestModal();document.getElementById('questModal').classList.remove('hidden');});
 document.getElementById('achieveBtn').addEventListener('click',()=>{Sound.play('click');renderAchievementModal();document.getElementById('achModal').classList.remove('hidden');});
 document.getElementById('statsBtn').addEventListener('click',()=>{Sound.play('click');renderStatsModal();document.getElementById('statsModal').classList.remove('hidden');});
@@ -1999,7 +1958,6 @@ document.querySelectorAll('.am-tab').forEach(t=>{
   });
 });
 
-// Keyboard shortcuts
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape' && G.tut.active){endTut();e.preventDefault();return;}
   if(G.state!=='playing') return;
@@ -2067,7 +2025,6 @@ function startGame(mi,save=null){
   document.getElementById('speedBtn').textContent='▶ 1x';
   G.speed=1;
   endTut();
-  // V14 stats
   if(!save){
     META.stats.totalGames=(META.stats.totalGames||0)+1;
     trackQuest('games',1);
@@ -2082,7 +2039,6 @@ function endGame(win){
   endTut();
   G.state=win?'win':'gameover';
   Save.clear();
-  // V14 stats
   if(G.gameStartTime){
     const playtime=Math.floor((Date.now()-G.gameStartTime)/1000);
     META.stats.totalPlaytime=(META.stats.totalPlaytime||0)+playtime;
@@ -2097,7 +2053,6 @@ function endGame(win){
     const base=G.map.gemReward||100;
     const bonus=Math.floor(G.wave*5);
     reward=base+bonus;
-    // Weekend bonus
     if(isWeekend()){
       reward *= 2;
       notify(`🎉 Cuối tuần X2! +${reward}💎`,false,true);
@@ -2314,13 +2269,7 @@ function tryStart(mi){
 /* ═══════════════════════════════════════════════════════════════
    SHOP UI
    ═══════════════════════════════════════════════════════════════ */
-function openShop(){
-  Sound.play('click');
-  document.getElementById('goModal').classList.add('hidden');
-  updateGemDisplay();
-  renderShopTab(G.shopTab);
-  document.getElementById('shModal').classList.remove('hidden');
-}
+function openShop(){Sound.play('click');document.getElementById('goModal').classList.add('hidden');updateGemDisplay();renderShopTab(G.shopTab);document.getElementById('shModal').classList.remove('hidden');}
 function closeShop(){Sound.play('click');document.getElementById('shModal').classList.add('hidden');}
 function renderShopTab(tab){
   G.shopTab=tab;
@@ -2713,9 +2662,8 @@ function enterGuest(){
   if(gm) applyMeta(gm);
   else applyMeta({gems:0,ownedSkins:[],equipped:null,ownedPremium:[],pity:0,totalPulls:0,unlockedThemes:['dark','light'],completedMaps:[],hasAnyWin:false,ownedTroopSkins:{},equippedTroopSkins:{},troopPity:0,troopPulls:0});
   updateAuthUI();buildMenu();
-  generateDailyQuests();
-  checkStreakReset();
-  updateEventBanner();
+  generateDailyQuests();checkStreakReset();updateEventBanner();
+  setTimeout(()=>backfillV14Data(),500);
 }
 document.getElementById('menuAuthBtn').addEventListener('click',async()=>{
   const act=document.getElementById('menuAuthBtn').dataset.action||'logout';
@@ -2725,23 +2673,13 @@ document.getElementById('menuAuthBtn').addEventListener('click',async()=>{
 });
 document.getElementById('quickLoginBtn').addEventListener('click',()=>{Sound.play('click');showLoginModal();});
 function initFirebase(){
-  if(typeof firebase==='undefined'){
-    const sw=document.getElementById('sw');
-    sw.classList.add('show');
-    setTimeout(()=>sw.classList.remove('show'),5000);
-    return false;
-  }
+  if(typeof firebase==='undefined'){const sw=document.getElementById('sw');sw.classList.add('show');setTimeout(()=>sw.classList.remove('show'),5000);return false;}
   try{
     if(!firebase.apps||firebase.apps.length===0) firebase.initializeApp(firebaseConfig);
     fbAuth=firebase.auth();
     try{fbDB=firebase.firestore();}catch(e){}
     return true;
-  }catch(e){
-    const sw=document.getElementById('sw');
-    sw.classList.add('show');
-    setTimeout(()=>sw.classList.remove('show'),5000);
-    return false;
-  }
+  }catch(e){const sw=document.getElementById('sw');sw.classList.add('show');setTimeout(()=>sw.classList.remove('show'),5000);return false;}
 }
 function bootAuth(){
   const ok=initFirebase();
@@ -2761,9 +2699,8 @@ function bootAuth(){
           updateAuthUI();buildMenu();
         })();}
         updateAuthUI();buildMenu();
-        generateDailyQuests();
-        checkStreakReset();
-        updateEventBanner();
+        generateDailyQuests();checkStreakReset();updateEventBanner();
+        setTimeout(()=>backfillV14Data(),1200);
       } else {
         aModal.classList.remove('hidden');
         mModal.classList.add('hidden');
@@ -2844,18 +2781,14 @@ G.map=MAPS[0];
 markPath();
 updateHUD();
 updateAuthUI();
-
-// V14 init
 generateDailyQuests();
 checkStreakReset();
 updateEventBanner();
-
+setTimeout(()=>backfillV14Data(),500);
 G.lastTime=performance.now();
 requestAnimationFrame(loop);
 setInterval(()=>{if(G.state==='playing') Save.save();},3000);
 window.addEventListener('beforeunload',()=>{if(G.state==='playing'||G.state==='paused') Save.save();saveMeta();});
-
-// Auto-save stats + check achievements every 30s during play
 setInterval(()=>{
   if(G.state === 'playing' && G.gameStartTime){
     META.stats.totalPlaytime = (META.stats.totalPlaytime || 0) + 30;
@@ -2864,29 +2797,24 @@ setInterval(()=>{
     checkAchievements();
   }
 }, 30000);
-
-// Check streak on load
 setTimeout(()=>{
   if(canClaimStreak() && META.loginStreak.streak >= 0){
     renderStreakModal();
     document.getElementById('streakModal').classList.remove('hidden');
   }
 }, 1500);
-
 function resize(){
   const wr=document.getElementById('wrap');
   let sc;
-  if(IS_MOBILE){
-    sc=Math.min(window.innerHeight/H,1);
-    sc=Math.max(sc,.5);
-  } else sc=Math.min(window.innerWidth/W,window.innerHeight/H,1.1);
+  if(IS_MOBILE){sc=Math.min(window.innerHeight/H,1);sc=Math.max(sc,.5);}
+  else sc=Math.min(window.innerWidth/W,window.innerHeight/H,1.1);
   wr.style.transform=`scale(${sc})`;
 }
 window.addEventListener('resize',resize);
 window.addEventListener('orientationchange',()=>setTimeout(resize,200));
 resize();
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bootAuth);
-else bootAuth();
+else bootAuth(); 
 </script>
 </body>
 </html>
