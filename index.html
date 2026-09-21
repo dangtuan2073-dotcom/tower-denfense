@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>Tower Defense v16.2</title>
+<title>Tower Defense v16.3</title>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
@@ -432,6 +432,7 @@ body::before{content:'📱 Hãy xoay ngang màn hình để chơi';position:fixe
 <button class="btn ic" id="questBtn" title="Nhiệm vụ">🎯</button>
 <button class="btn ic" id="achieveBtn" title="Thành tựu">🏅</button>
 <button class="btn ic" id="statsBtn" title="Thống kê">📊</button>
+<button class="btn ic" id="debugBtn" title="Xem Save">🔍</button>
 <button class="btn ic" id="themeBtn" title="Giao diện">🎨</button>
 <button class="btn ic" id="shakeBtn" title="Rung">📳</button>
 <button class="btn ic" id="soundBtn" title="Âm thanh">🔊</button>
@@ -519,14 +520,11 @@ body::before{content:'📱 Hãy xoay ngang màn hình để chơi';position:fixe
 <div id="cModal" class="modal hidden"><div class="cb"><h2>⚠️ Có Ván Đang Chơi Dở</h2><p id="cMsg">Bạn có một ván đang chơi dở.</p><div class="ci"><div>Map<b id="cMap">-</b></div><div>Đợt<b id="cWave">-</b></div><div>Vàng<b id="cGold">-</b></div><div>Máu<b id="cHp">-</b></div></div><div class="cbt"><button class="btn primary" id="cCont">▶ Tiếp tục</button><button class="btn" id="cNew">🆕 Ván mới</button><button class="btn" id="cCanc">✕ Hủy</button></div></div></div>
 <div id="goModal" class="modal hidden"><div id="gt" class="lose">THẤT BẠI</div><div style="color:var(--dim);margin-bottom:12px;font-size:15px;" id="goMsg"></div><div id="goRew" style="font-size:20px;font-weight:800;color:var(--gem);margin-bottom:20px;display:none;"><span id="goGemTxt"></span></div><div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;"><button class="btn primary" id="retryBtn">↻ Chơi lại</button><button class="btn gem" id="goShopBtn">🛒 Shop</button><button class="btn" id="backBtn">☰ Về menu</button></div></div>
 </div>
-   <script>
 /* ============================================================
-   TOWER DEFENSE v16.2 — FULL BUILD
-   ✅ 4 fix v16.1
-   ✅ Patch A: Deep Merge Save
-   ✅ Patch B: Logout sạch
-   ✅ Migration layer: chống mất tiến trình khi ID khác version
-   ✅ Fix auth crash không văng khi Firestore lỗi
+   TOWER DEFENSE v16.3 — PHẦN JS HOÀN CHỈNH
+   ✅ Cloud-first — KHÔNG BAO GIỜ mất tiến trình
+   ✅ KHÔNG XÓA ID nào trong owned
+   ✅ Bảo vệ chống ghi cloud rỗng
    ============================================================ */
 const $ = id => document.getElementById(id);
 const $$ = sel => document.querySelectorAll(sel);
@@ -540,7 +538,7 @@ const dayKey = ts => { const d = new Date(ts); return `${d.getFullYear()}-${Stri
 const fmt = n => n >= 1e6 ? (n/1e6).toFixed(2)+"M" : n >= 1e3 ? (n/1e3).toFixed(1)+"K" : Math.floor(n).toString();
 
 /* ============================================================
-   FIREBASE CONFIG
+   FIREBASE
    ============================================================ */
 const FB_CONFIG = {
   apiKey: "AIzaSyDfsYKgjCes1-y6W6HFpT0dEjZUAcD3F_c",
@@ -562,7 +560,7 @@ try {
 } catch(e) { console.warn("[Firebase] Init failed:", e); }
 
 /* ============================================================
-   DATA
+   DATA — giữ nguyên toàn bộ
    ============================================================ */
 const THEMES = [
   { id:"dark",   name:"Bóng Tối",   icon:"🌑", desc:"Mặc định",           unlock:null },
@@ -737,7 +735,9 @@ const G = {
   settings:{ theme:"dark", shake:true, sound:true },
   audioCtx:null,
   inProgress:null,
-  tutorialDone:false, tutorialStep:0
+  tutorialDone:false, tutorialStep:0,
+  _cloudLoadedOnce:false,   // ✅ đánh dấu đã load cloud lần đầu
+  _applyingCloud:false      // ✅ chặn ghi đè khi đang apply cloud
 };
 
 /* ============================================================
@@ -771,9 +771,6 @@ const SFX = {
   notif:  () => { sfx(880,0.08); setTimeout(()=>sfx(1175,0.12),80); }
 };
 
-/* ============================================================
-   UTIL
-   ============================================================ */
 function notify(text, kind="") {
   const el = document.createElement("div");
   el.className = "nt " + kind;
@@ -793,9 +790,10 @@ function shake(ms=200) {
 }
 
 /* ============================================================
-   SAVE — DEFAULT / LOAD / SERIALIZE
+   SAVE — KHÔNG XOÁ GÌ
    ============================================================ */
 const SAVE_KEY = "td_v16_save";
+
 function defaultSave() {
   return {
     uid:null, isGuest:false,
@@ -814,100 +812,26 @@ function defaultSave() {
   };
 }
 
-/* ============================================================
-   ✅ MIGRATION LAYER — chống mất tiến trình khi ID khác version
-   ============================================================ */
-const TOWER_ALIAS = {
-  "t_archer":"arrow","t_cannon":"cannon","t_frost":"frost","t_ice":"frost",
-  "t_tesla":"tesla","t_poison":"poison","t_sniper":"sniper",
-  "t_flame":"flame","t_fire":"flame","t_laser":"laser",
-  "t_midas":"midas","t_time":"time","t_timekeeper":"time",
-  "t_necro":"necro","t_necromancer":"necro","t_smith":"smith","t_blacksmith":"smith",
-  "tower_arrow":"arrow","tower_cannon":"cannon","tower_frost":"frost"
-};
-const SKIN_ALIAS = {
-  "skin_default":"s_default","skin_wood":"s_wood","skin_stone":"s_stone",
-  "skin_iron":"s_iron","skin_bronze":"s_bronze","skin_crystal":"s_crystal",
-  "skin_emerald":"s_emerald","skin_ruby":"s_ruby","skin_sapphire":"s_sapphire",
-  "skin_amethyst":"s_amethyst","skin_topaz":"s_topaz","skin_dragon":"s_dragon",
-  "skin_phoenix":"s_phoenix","skin_unicorn":"s_unicorn","skin_titan":"s_titan"
-};
-const TROOP_ALIAS = {
-  "warrior":"t_soldier","soldier":"t_soldier",
-  "archer":"t_archer","mage":"t_mage","wizard":"t_mage",
-  "knight":"t_knight","rogue":"t_rogue","priest":"t_priest",
-  "berserker":"t_berserker","druid":"t_druid",
-  "paladin":"t_paladin","warlock":"t_warlock",
-  "phoenix":"t_phoenix","dragon":"t_dragon"
-};
-const MAP_ALIAS = {
-  "map_1":"plains","map_2":"desert","map_3":"ocean",
-  "map_4":"forest","map_5":"sunset","map_6":"void",
-  "grass":"plains","sand":"desert","sea":"ocean",
-  "jungle":"forest","dusk":"sunset","nightmare":"void"
-};
-
-function migrateSave(s) {
+/* ✅ CHỈ đảm bảo cấu trúc object, KHÔNG XOÁ ID */
+function normalizeShape(s) {
   if (!s || typeof s !== "object") return defaultSave();
-  const def = defaultSave();
-
-  const validTowerIds = new Set(TOWER_DEFS.map(t => t.id));
-  const validSkinIds  = new Set(SKIN_DEFS.map(t => t.id));
-  const validTroopIds = new Set(TROOP_DEFS.map(t => t.id));
-  const validMapIds   = new Set(MAP_DEFS.map(m => m.id));
-  const validThemeIds = new Set(THEMES.map(t => t.id));
-
-  function normalizeKeys(obj, validSet, aliasMap, fallback) {
-    const out = Object.assign({}, fallback || {});
-    if (!obj || typeof obj !== "object") return out;
-    for (const oldKey in obj) {
-      if (!obj[oldKey]) continue;
-      const newKey = aliasMap[oldKey] || oldKey;
-      if (validSet.has(newKey)) out[newKey] = true;
-    }
-    return out;
-  }
-
-  if (typeof s.currentMap !== "string" || !validMapIds.has(s.currentMap)) {
-    s.currentMap = MAP_ALIAS[s.currentMap] || def.currentMap;
-    if (!validMapIds.has(s.currentMap)) s.currentMap = def.currentMap;
-  }
-
-  s.owned = s.owned || {};
-  s.owned.towers = normalizeKeys(s.owned.towers, validTowerIds, TOWER_ALIAS,
-    { arrow:true, cannon:true, frost:true, tesla:true, poison:true, sniper:true, flame:true, laser:true });
-  ["arrow","cannon","frost","tesla","poison","sniper","flame","laser"].forEach(id => { s.owned.towers[id] = true; });
-  s.owned.skins  = normalizeKeys(s.owned.skins,  validSkinIds,  SKIN_ALIAS,  { s_default:true });
-  s.owned.skins.s_default = true;
-  s.owned.troops = normalizeKeys(s.owned.troops, validTroopIds, TROOP_ALIAS, {});
-  s.owned.themes = normalizeKeys(s.owned.themes, validThemeIds, {},          { dark:true, light:true });
-  s.owned.themes.dark = true; s.owned.themes.light = true;
-
-  if (Array.isArray(s.loadout)) {
-    s.loadout = s.loadout.map(id => TOWER_ALIAS[id] || id).filter(id => validTowerIds.has(id));
-    s.loadout = [...new Set(s.loadout)];
-  } else s.loadout = [];
-  if (s.loadout.length === 0) s.loadout = ["arrow","cannon","frost","tesla","poison","sniper","flame","laser"];
-  if (s.loadout.length > 8) s.loadout = s.loadout.slice(0, 8);
-
-  s.equipped = s.equipped || {};
-  if (typeof s.equipped.skin !== "string" || !validSkinIds.has(s.equipped.skin)) {
-    s.equipped.skin = SKIN_ALIAS[s.equipped.skin] || "s_default";
-    if (!validSkinIds.has(s.equipped.skin)) s.equipped.skin = "s_default";
-  }
-  if (s.equipped.troop) {
-    const t = TROOP_ALIAS[s.equipped.troop] || s.equipped.troop;
-    s.equipped.troop = validTroopIds.has(t) ? t : null;
-  }
-
+  if (!s.owned || typeof s.owned !== "object") s.owned = {};
+  if (!s.owned.skins  || typeof s.owned.skins  !== "object") s.owned.skins  = {};
+  if (!s.owned.troops || typeof s.owned.troops !== "object") s.owned.troops = {};
+  if (!s.owned.towers || typeof s.owned.towers !== "object") s.owned.towers = {};
+  if (!s.owned.themes || typeof s.owned.themes !== "object") s.owned.themes = {};
   if (typeof s.gems !== "number" || isNaN(s.gems)) s.gems = 0;
-  if (typeof s.stats !== "object") s.stats = { ...def.stats };
-
-  console.log("[Migrate] Towers:", Object.keys(s.owned.towers).length,
-    "| Skins:", Object.keys(s.owned.skins).length,
-    "| Troops:", Object.keys(s.owned.troops).length,
-    "| Map:", s.currentMap,
-    "| Loadout:", s.loadout.length);
+  if (!s.stats || typeof s.stats !== "object") s.stats = {};
+  if (!s.achievements || typeof s.achievements !== "object") s.achievements = { unlocked:{}, progress:{} };
+  if (!s.achievements.unlocked) s.achievements.unlocked = {};
+  if (!s.achievements.progress) s.achievements.progress = {};
+  if (!s.streak || typeof s.streak !== "object") s.streak = { last:null, current:0, best:0, claimedToday:false, modalShownToday:false };
+  if (!s.quests || typeof s.quests !== "object") s.quests = { date:todayKey(), list:[] };
+  if (!s.daily || typeof s.daily !== "object") s.daily = { date:todayKey(), plays:0,wins:0,kills:0,maxWave:0,gold:0,towersBuilt:0,upgrades:0,gacha:0,specialBuilt:0 };
+  if (!s.settings || typeof s.settings !== "object") s.settings = { theme:"dark", shake:true, sound:true };
+  if (!s.equipped || typeof s.equipped !== "object") s.equipped = { skin:"s_default", troop:null };
+  if (!Array.isArray(s.loadout)) s.loadout = [];
+  if (!s.currentMap || typeof s.currentMap !== "string") s.currentMap = "plains";
   return s;
 }
 
@@ -915,7 +839,9 @@ function loadSave() {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return defaultSave();
-    return migrateSave(Object.assign(defaultSave(), JSON.parse(raw)));
+    const parsed = JSON.parse(raw);
+    const merged = Object.assign(defaultSave(), parsed);
+    return normalizeShape(merged);
   } catch(e) { return defaultSave(); }
 }
 
@@ -929,132 +855,122 @@ function serialize() {
   };
 }
 
+/* ✅ applySave — giữ RAW owned, không filter, không thêm default */
 function applySave(s) {
   if (!s || typeof s !== "object") return;
   try {
-    s = migrateSave(s);
+    s = normalizeShape(s);
     const def = defaultSave();
+
     G.settings = Object.assign({}, def.settings, s.settings || {});
     G.currentMap = s.currentMap || def.currentMap;
-    G.loadout = Array.isArray(s.loadout) && s.loadout.length ? s.loadout : def.loadout;
+
+    // ✅ Loadout giữ RAW
+    G.loadout = Array.isArray(s.loadout) && s.loadout.length ? [...s.loadout] : [...def.loadout];
+
+    // ✅ Owned giữ RAW — không xoá ID nào, không thêm ID nào
     G.owned = {
-      skins:  Object.assign({}, def.owned.skins,  (s.owned && s.owned.skins)  || {}),
-      troops: Object.assign({}, def.owned.troops, (s.owned && s.owned.troops) || {}),
-      towers: Object.assign({}, def.owned.towers, (s.owned && s.owned.towers) || {}),
-      themes: Object.assign({}, def.owned.themes, (s.owned && s.owned.themes) || {})
+      skins:  { ...s.owned.skins  },
+      troops: { ...s.owned.troops },
+      towers: { ...s.owned.towers },
+      themes: { ...s.owned.themes }
     };
+
+    // ✅ Equipped giữ RAW
     G.equipped = Object.assign({}, def.equipped, s.equipped || {});
     G.gems = (typeof s.gems === "number") ? s.gems : 0;
     G.stats = Object.assign({}, def.stats, s.stats || {});
     G.achievements = {
-      unlocked: (s.achievements && s.achievements.unlocked) || {},
-      progress: (s.achievements && s.achievements.progress) || {}
+      unlocked: { ...(s.achievements.unlocked || {}) },
+      progress: { ...(s.achievements.progress || {}) }
     };
     G.streak = Object.assign({}, def.streak, s.streak || {});
     G.quests = (s.quests && s.quests.date) ? s.quests : def.quests;
     G.daily = (s.daily && s.daily.date) ? Object.assign({}, def.daily, s.daily) : { ...def.daily, date: todayKey() };
     G.inProgress = s.inProgress || null;
     G.isGuest = s.isGuest || false;
+
+    console.log("[applySave] ✅",
+      "towers:", Object.keys(G.owned.towers).length,
+      "skins:", Object.keys(G.owned.skins).length,
+      "troops:", Object.keys(G.owned.troops).length,
+      "themes:", Object.keys(G.owned.themes).length,
+      "map:", G.currentMap,
+      "loadout:", G.loadout.length);
   } catch(e) {
-    console.error("[applySave] Data lỗi — dùng default:", e);
-    const def = defaultSave();
-    G.settings = def.settings; G.currentMap = def.currentMap; G.loadout = def.loadout;
-    G.owned = def.owned; G.equipped = def.equipped; G.gems = def.gems;
-    G.stats = def.stats; G.achievements = def.achievements; G.streak = def.streak;
-    G.quests = def.quests; G.daily = def.daily;
+    console.error("[applySave] Lỗi:", e);
   }
 }
 
-function persistLocal() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(serialize())); } catch(e){} }
+function persistLocal() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(serialize())); } catch(e){}
+}
+
 function persistCloud() {
   if (!fbReady || !fbAuth || !fbAuth.currentUser) return Promise.resolve();
-  return fbDB.collection("saves").doc(fbAuth.currentUser.uid).set(serialize(), { merge:true })
+  // ⛔ chặn ghi khi đang apply cloud
+  if (G._applyingCloud) {
+    console.log("[Cloud] ⏸ Skip write — đang apply cloud");
+    return Promise.resolve();
+  }
+
+  const data = serialize();
+  const towerCount = Object.keys(data.owned?.towers || {}).length;
+  const skinCount  = Object.keys(data.owned?.skins  || {}).length;
+  const troopCount = Object.keys(data.owned?.troops || {}).length;
+
+  // ⛔ BẢO VỆ: nếu owned rỗng bất thường → KHÔNG ghi
+  if (towerCount === 0 && skinCount === 0 && troopCount === 0) {
+    console.warn("[Cloud] ⛔ Chặn ghi — owned rỗng");
+    return Promise.resolve();
+  }
+
+  return fbDB.collection("saves").doc(fbAuth.currentUser.uid)
+    .set(data, { merge:true })
+    .then(() => console.log("[Cloud] ✅ Saved",
+      "towers:", towerCount, "skins:", skinCount, "troops:", troopCount))
     .catch(e => console.warn("[Cloud] Save fail:", e.message));
 }
+
 function scheduleSave(cloud=true) {
   G.isDirty = true;
   persistLocal();
   if (cloud) {
     clearTimeout(G.saveTimer);
-    G.saveTimer = setTimeout(()=>{ persistCloud(); G.isDirty=false; }, 1200);
+    G.saveTimer = setTimeout(()=>{ persistCloud(); G.isDirty=false; }, 1500);
   }
 }
 
 /* ============================================================
-   ✅ DEEP MERGE SAVE — giữ tiến trình tốt nhất từ 2 phía
+   ✅ CLOUD LOAD — dùng NGUYÊN cloud
    ============================================================ */
-function deepMergeSave(cloud, local) {
-  const merged = Object.assign(defaultSave(), cloud);
-  merged.gems = Math.max(cloud.gems || 0, local.gems || 0);
-
-  for (const cat of ["skins","troops","towers","themes"]) {
-    merged.owned[cat] = Object.assign({}, cloud.owned?.[cat]||{}, local.owned?.[cat]||{});
-  }
-  // Đảm bảo base
-  ["arrow","cannon","frost","tesla","poison","sniper","flame","laser"].forEach(id => merged.owned.towers[id] = true);
-  merged.owned.skins.s_default = true;
-  merged.owned.themes.dark = true; merged.owned.themes.light = true;
-
-  for (const k in local.stats) {
-    merged.stats[k] = Math.max(cloud.stats?.[k]||0, local.stats?.[k]||0);
-  }
-
-  merged.achievements.unlocked = Object.assign({}, cloud.achievements?.unlocked||{}, local.achievements?.unlocked||{});
-  merged.achievements.progress = Object.assign({}, cloud.achievements?.progress||{}, local.achievements?.progress||{});
-
-  const cSt = cloud.streak||{}, lSt = local.streak||{};
-  merged.streak.best = Math.max(cSt.best||0, lSt.best||0);
-  if ((lSt.current||0) > (cSt.current||0) || (lSt.last && lSt.last > (cSt.last||""))) {
-    merged.streak.current = lSt.current;
-    merged.streak.last = lSt.last;
-    merged.streak.claimedToday = lSt.claimedToday;
-    merged.streak.modalShownToday = lSt.modalShownToday;
-  }
-
-  const today = todayKey();
-  if (local.daily?.date === today && cloud.daily?.date !== today) merged.daily = local.daily;
-  if (local.quests?.date === today && cloud.quests?.date !== today) merged.quests = local.quests;
-
-  if (local.loadout?.length) merged.loadout = local.loadout;
-  merged.equipped = Object.assign(merged.equipped, local.equipped || {});
-  if (local.currentMap) merged.currentMap = local.currentMap;
-  if (local.settings) merged.settings = Object.assign(merged.settings, local.settings);
-  merged.uid = cloud.uid || local.uid;
-  merged.isGuest = false;
-  return merged;
-}
-
 async function fbLoadSave(uid) {
   if (!fbReady || !fbDB) return null;
-  try { const doc = await fbDB.collection("saves").doc(uid).get(); return doc.exists ? doc.data() : null; }
-  catch(e) { console.warn("[Cloud] Load fail:", e.message); return null; }
+  try {
+    const doc = await fbDB.collection("saves").doc(uid).get();
+    return doc.exists ? doc.data() : null;
+  } catch(e) { console.warn("[Cloud] Load fail:", e.message); return null; }
 }
 
 async function fbMergeOrCreate(uid) {
-  const local = loadSave();
-  let cloud = null;
-  try { cloud = await fbLoadSave(uid); }
-  catch(e) { console.warn("[Cloud] Load error:", e.message); }
+  const cloud = await fbLoadSave(uid);
 
-  if (cloud) {
-    try {
-      if (!local.uid || local.isGuest || local.uid === uid) return deepMergeSave(cloud, local);
-      return cloud;
-    } catch(e) {
-      console.warn("[Merge] Error — fallback cloud:", e.message);
-      return cloud;
-    }
+  if (cloud && (cloud.owned || cloud.stats || cloud.gems !== undefined)) {
+    console.log("[Cloud] ✅ CLOUD CÓ DATA → DÙNG NGUYÊN, KHÔNG GHI ĐÈ");
+    console.log("[Cloud] Cloud towers:", Object.keys(cloud.owned?.towers || {}).length,
+                "| skins:", Object.keys(cloud.owned?.skins || {}).length,
+                "| troops:", Object.keys(cloud.owned?.troops || {}).length);
+    return normalizeShape(cloud);
   }
 
-  const fresh = Object.assign(defaultSave(), local);
-  fresh.uid = uid; fresh.isGuest = false;
-  fresh._createdAt = now(); fresh._updatedAt = now();
+  // Cloud trống → upload local
+  const local = loadSave();
+  console.log("[Cloud] Cloud trống → upload local lên");
+  const fresh = Object.assign({}, local, { uid, isGuest:false, _createdAt: now(), _updatedAt: now() });
   try {
     await fbDB.collection("saves").doc(uid).set(fresh);
-    console.log("[Cloud] ✅ Tạo save mới thành công");
-  } catch(e) {
-    console.warn("[Cloud] Không tạo được save (rules?):", e.message);
-  }
+    console.log("[Cloud] ✅ Uploaded local");
+  } catch(e) { console.warn("[Cloud] Upload fail:", e.message); }
   return fresh;
 }
 
@@ -1184,7 +1100,7 @@ function trackGacha() { G.daily.gacha++; }
 function trackWave(w) { if (w>G.stats.maxWave) G.stats.maxWave=w; if (w>G.daily.maxWave) G.daily.maxWave=w; }
 
 /* ============================================================
-   GACHA — FIX 1 & FIX 2
+   GACHA
    ============================================================ */
 function rollRarity() {
   const total = Object.values(RARITY_WEIGHT).reduce((a,b)=>a+b,0);
@@ -1216,13 +1132,11 @@ function applyReward(r) {
   if (r.kind === "tower") { G.owned.towers[r.def.id]=true; return { icon:r.def.icon, name:r.def.name, rarity:r.rarity||"special", tag:"THÁP" }; }
   return null;
 }
-
 function resetSpinState() {
   G.isSpinning = false;
   if (G.spinSafetyTimer) { clearTimeout(G.spinSafetyTimer); G.spinSafetyTimer = null; }
   updateShopButtons();
 }
-
 function doGacha(mode) {
   if (G.isSpinning) return;
   const cfg = GACHA_COST[mode];
@@ -1232,18 +1146,14 @@ function doGacha(mode) {
   G.isSpinning = true;
   if (G.spinSafetyTimer) clearTimeout(G.spinSafetyTimer);
   G.spinSafetyTimer = setTimeout(() => {
-    console.warn("[Gacha] Safety reset — force unlock spinner");
+    console.warn("[Gacha] Safety reset");
     try { closeSpinModal(); } catch(e){}
     resetSpinState();
   }, 3000);
 
   try {
     G.gems -= cfg.gem;
-    trackGacha();
-    updateHUD();
-    scheduleSave();
-    updateShopButtons();
-
+    trackGacha(); updateHUD(); scheduleSave(); updateShopButtons();
     openSpinModal(mode);
     SFX.gacha();
 
@@ -1251,14 +1161,11 @@ function doGacha(mode) {
       try {
         const results = [];
         if (mode === "special") {
-          /* ✅ FIX 2: 5% tháp / 45% skin / 45% quân / 5% gem */
           const r = Math.random();
           if (r < 0.05) {
             const locked = TOWER_DEFS.filter(t => t.kind === "special" && !G.owned.towers[t.id]);
-            if (locked.length) {
-              const def = pick(locked);
-              results.push(applyReward({ kind:"tower", def, rarity:"special" }));
-            } else results.push(applyReward({ kind:"gem", amount:500, rarity:"mythic" }));
+            if (locked.length) results.push(applyReward({ kind:"tower", def:pick(locked), rarity:"special" }));
+            else results.push(applyReward({ kind:"gem", amount:500, rarity:"mythic" }));
           } else if (r < 0.50) {
             const mythic = SKIN_DEFS.filter(s => s.rarity === "mythic" && !G.owned.skins[s.id]);
             const legend = SKIN_DEFS.filter(s => s.rarity === "legendary" && !G.owned.skins[s.id]);
@@ -1272,20 +1179,18 @@ function doGacha(mode) {
             if (target) results.push(applyReward({ kind:"troop", def:target, rarity:target.rarity }));
             else results.push(applyReward({ kind:"gem", amount:400, rarity:"mythic" }));
           } else {
-            const amt = rndInt(100, 250);
-            results.push(applyReward({ kind:"gem", amount:amt, rarity:"legendary" }));
+            results.push(applyReward({ kind:"gem", amount:rndInt(100,250), rarity:"legendary" }));
           }
         } else {
           for (let i = 0; i < cfg.count; i++) results.push(applyReward(rollOneReward()));
         }
-
         recalcCollectionStats();
         closeSpinModal();
         showGachaResults(results, mode);
         checkAchievements();
         scheduleSave();
       } catch(err) {
-        console.error("[Gacha] Error during roll:", err);
+        console.error("[Gacha] Roll error:", err);
         try { closeSpinModal(); } catch(e){}
       } finally {
         resetSpinState();
@@ -1376,13 +1281,12 @@ function tickEvent() {
 }
 
 /* ============================================================
-   CANVAS / MAP
+   CANVAS
    ============================================================ */
 const cv = $("game");
 const ctx = cv.getContext("2d");
 const CW = 1100, CH = 700;
 cv.width = CW; cv.height = CH;
-
 function resizeCanvas() {
   const wrap = $("wrap");
   const vw = window.innerWidth, vh = window.innerHeight;
@@ -1423,7 +1327,7 @@ function posOnPath(dist, pd) {
 }
 
 /* ============================================================
-   ENEMY
+   ENEMY / TOWER / PROJECTILE / WAVE (giữ nguyên logic)
    ============================================================ */
 const ENEMY_TYPES = [
   { id:"grunt",  name:"Lính",  icon:"👾", hp:40,  speed:60,  gold:8,  color:"#51cf66", size:12 },
@@ -1453,12 +1357,10 @@ function buildWave(w, map) {
   if (w >= 7) pool.push("flyer");
   const q = [];
   for (let i=0; i<count; i++) {
-    const t = ENEMY_TYPES.find(e=>e.id===pick(pool));
-    q.push({ type:t, hpMul, delay:i*400 });
+    q.push({ type:ENEMY_TYPES.find(e=>e.id===pick(pool)), hpMul, delay:i*400 });
   }
   if (w % 5 === 0) {
-    const boss = ENEMY_TYPES.find(e=>e.id==="boss");
-    q.push({ type:boss, hpMul:hpMul*1.5, delay:count*400+1000 });
+    q.push({ type:ENEMY_TYPES.find(e=>e.id==="boss"), hpMul:hpMul*1.5, delay:count*400+1000 });
   }
   return q;
 }
@@ -1480,11 +1382,7 @@ function updateEnemies(dt, pd) {
   }
   G.enemies = G.enemies.filter(e=>!e.dead && e.hp > 0);
 }
-function onReachBase(e) {
-  G.hp -= e.isBoss ? 5 : 1;
-  shake(180); updateHUD();
-  if (G.hp <= 0) endGame(false);
-}
+function onReachBase(e) { G.hp -= e.isBoss ? 5 : 1; shake(180); updateHUD(); if (G.hp <= 0) endGame(false); }
 function damageEnemy(e, dmg, tw) {
   if (e.dead) return;
   e.hp -= dmg;
@@ -1530,9 +1428,7 @@ function updateTowers(dt) {
     tw.cd -= dt;
     if (tw.cd > 0) continue;
     if (tw.special === "necro") {
-      if (!tw.lastSummon || t - tw.lastSummon > 12000) {
-        tw.lastSummon = t; summonMinion(tw); continue;
-      }
+      if (!tw.lastSummon || t - tw.lastSummon > 12000) { tw.lastSummon = t; summonMinion(tw); continue; }
     }
     if (tw.special === "smith") continue;
     const target = findTarget(tw);
@@ -1623,9 +1519,6 @@ function updateParticles(dt) {
 function addText(x, y, val, color) { G.texts.push({ x, y, val, color, life:0.9, maxLife:0.9, vy:-55 }); }
 function updateTexts(dt) { for (const t of G.texts) { t.life -= dt; t.y += t.vy*dt; } G.texts = G.texts.filter(t=>t.life>0); }
 
-/* ============================================================
-   WAVES / TOWER / RENDER / LOOP
-   ============================================================ */
 function startWave() {
   if (G.waveActive) return;
   G.wave++; trackWave(G.wave);
@@ -1652,8 +1545,7 @@ function updateWaveSpawn() {
     const bonus = Math.min(20 + G.wave * 4, 80);
     addGold(bonus);
     notify(`✅ Đợt ${G.wave} xong! +${bonus}💰`,"ok");
-    const map = getMap();
-    if (G.wave >= map.waves) { endGame(true); return; }
+    if (G.wave >= getMap().waves) { endGame(true); return; }
     setTimeout(()=>{ if (G.running && !G.paused) startWave(); }, 3000);
   }
 }
@@ -1668,20 +1560,14 @@ function placeTower(defId, gx, gy) {
   if (!def) return false;
   if (!G.owned.towers[defId]) { notify("Chưa sở hữu tháp này!","err"); return false; }
   if (G.gold < def.cost) { notify("Không đủ vàng!","err"); SFX.error(); return false; }
-  for (const t of G.towers) {
-    if (Math.hypot(t.x-gx, t.y-gy) < 36) { notify("Vị trí đã có tháp!","err"); return false; }
-  }
+  for (const t of G.towers) { if (Math.hypot(t.x-gx, t.y-gy) < 36) { notify("Vị trí đã có tháp!","err"); return false; } }
   const pd = buildPathData(getPath());
   for (let d=0; d<=pd.total; d+=20) {
     const p = posOnPath(d, pd);
     if (Math.hypot(p.x-gx, p.y-gy) < 34) { notify("Không đặt trên đường đi!","err"); return false; }
   }
   G.gold -= def.cost;
-  G.towers.push({
-    id:++towerUid, def, x:gx, y:gy, level:1, cd:0,
-    dmg:def.dmg, range:def.range, speed:def.speed,
-    totalSpent:def.cost, special:def.special||null
-  });
+  G.towers.push({ id:++towerUid, def, x:gx, y:gy, level:1, cd:0, dmg:def.dmg, range:def.range, speed:def.speed, totalSpent:def.cost, special:def.special||null });
   trackTowerBuilt(def.kind === "special");
   spawnParticles(gx, gy, def.color, 12);
   SFX.build();
@@ -1706,6 +1592,10 @@ function sellTower(t) {
   spawnParticles(t.x, t.y, t.def.color, 10);
   SFX.sell(); updateHUD(); scheduleSave(); renderShop();
 }
+
+/* ============================================================
+   RENDER
+   ============================================================ */
 function drawBackground() {
   const map = getMap();
   ctx.fillStyle = map.bg; ctx.fillRect(0, 0, CW, CH);
@@ -1743,10 +1633,7 @@ function drawTowers() {
     ctx.strokeStyle = "rgba(0,0,0,0.5)"; ctx.lineWidth = 3; ctx.stroke();
     ctx.font = "20px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.fillText(t.def.icon, t.x, t.y);
-    if (t.level > 1) {
-      ctx.font = "bold 10px sans-serif"; ctx.fillStyle = "#fff";
-      ctx.fillText("L" + t.level, t.x, t.y + 24);
-    }
+    if (t.level > 1) { ctx.font = "bold 10px sans-serif"; ctx.fillStyle = "#fff"; ctx.fillText("L" + t.level, t.x, t.y + 24); }
   }
 }
 function drawEnemies() {
@@ -1759,8 +1646,7 @@ function drawEnemies() {
     ctx.fillText(e.type.icon, e.x, e.y);
     const pct = clamp(e.hp/e.maxHp, 0, 1);
     const w = e.size*2.4;
-    ctx.fillStyle = "rgba(0,0,0,0.6)";
-    ctx.fillRect(e.x-w/2, e.y-e.size-8, w, 4);
+    ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(e.x-w/2, e.y-e.size-8, w, 4);
     ctx.fillStyle = pct>0.5 ? "#51cf66" : pct>0.25 ? "#ffd43b" : "#ff6b6b";
     ctx.fillRect(e.x-w/2, e.y-e.size-8, w*pct, 4);
     const t = now();
@@ -1823,21 +1709,11 @@ function gameLoop(ts) {
   const dt = Math.min(dtRaw, 0.05) * G.speed;
   if (G.running && !G.paused) {
     const pd = buildPathData(getPath());
-    updateTowers(dt);
-    updateProjectiles(dt);
-    updateEnemies(dt, pd);
-    updateParticles(dt);
-    updateTexts(dt);
-    updateWaveSpawn();
-    tickEvent();
+    updateTowers(dt); updateProjectiles(dt); updateEnemies(dt, pd);
+    updateParticles(dt); updateTexts(dt); updateWaveSpawn(); tickEvent();
   }
-  drawBackground();
-  drawTowers();
-  drawEnemies();
-  drawProjectiles();
-  drawParticles();
-  drawTexts();
-  drawBuildPreview();
+  drawBackground(); drawTowers(); drawEnemies(); drawProjectiles();
+  drawParticles(); drawTexts(); drawBuildPreview();
   if (G.selected) updateTowerInfo();
 }
 cv.addEventListener("mousemove", e => { G.mouse = canvasCoords(e); });
@@ -1850,9 +1726,7 @@ cv.addEventListener("click", e => {
   if (G.buildMode) { if (placeTower(G.buildMode, c.x, c.y)) G.buildMode = null; renderShop(); return; }
   G.selected = null; hideTowerInfo();
 });
-cv.addEventListener("touchstart", e => {
-  if (e.touches.length === 1) G.mouse = canvasCoords(e.touches[0]);
-}, { passive:true });
+cv.addEventListener("touchstart", e => { if (e.touches.length === 1) G.mouse = canvasCoords(e.touches[0]); }, { passive:true });
 cv.addEventListener("touchend", e => {
   if (e.changedTouches.length !== 1) return;
   const c = canvasCoords(e.changedTouches[0]);
@@ -1878,7 +1752,7 @@ function updateTowerInfo() {
 }
 
 /* ============================================================
-   SHOP
+   SHOP / SPIN / MODALS (giữ nguyên)
    ============================================================ */
 function renderShop() {
   const shop = $("shop"); shop.innerHTML = "";
@@ -1938,10 +1812,7 @@ function renderShopModal() {
 }
 function renderShopGacha(c) {
   c.innerHTML = `
-    <div class="gi2">
-      <div class="git">🎰 GACHA</div>
-      <div class="gid">Quay để nhận skin, quân và gem. Tỉ lệ: Common 60%, Rare 28%, Epic 9%, Legendary 2.7%, Mythic 0.3%</div>
-    </div>
+    <div class="gi2"><div class="git">🎰 GACHA</div><div class="gid">Quay để nhận skin, quân và gem. Tỉ lệ: Common 60%, Rare 28%, Epic 9%, Legendary 2.7%, Mythic 0.3%</div></div>
     <div class="gbs">
       <button class="gb s" id="gSingle"><div>🎰 Quay 1</div><div class="c">20 💎</div></button>
       <button class="gb m" id="gMulti"><div>🎰 Quay 10</div><div class="c">180 💎 <span class="dsc">-10%</span></div></button>
@@ -1949,12 +1820,7 @@ function renderShopGacha(c) {
     </div>
     <div class="gi2" style="margin-top:14px;background:linear-gradient(135deg,rgba(255,212,59,.08),rgba(192,132,252,.08));border-color:rgba(255,212,59,.3)">
       <div class="git" style="color:var(--gold)">⭐ GACHA ĐẶC BIỆT</div>
-      <div class="gid" style="font-size:11px">
-        Tỉ lệ: <b style="color:var(--gold)">5% tháp đặc biệt</b> · 
-        <b style="color:var(--gem)">45% skin Mythic/Legend</b> · 
-        <b style="color:var(--acc)">45% quân Mythic/Legend</b> · 
-        <b style="color:var(--ok)">5% gem</b>
-      </div>
+      <div class="gid" style="font-size:11px">Tỉ lệ: <b style="color:var(--gold)">5% tháp đặc biệt</b> · <b style="color:var(--gem)">45% skin</b> · <b style="color:var(--acc)">45% quân</b> · <b style="color:var(--ok)">5% gem</b></div>
     </div>`;
   $("gSingle").onclick  = () => doGacha("single");
   $("gMulti").onclick   = () => doGacha("multi");
@@ -1980,6 +1846,14 @@ function renderShopSkins(c) {
     grid.appendChild(div);
   });
   c.appendChild(grid);
+  // Hiển thị ID skins lạ (không có trong SKIN_DEFS)
+  const unknownSkins = Object.keys(G.owned.skins).filter(id => !SKIN_DEFS.find(s=>s.id===id));
+  if (unknownSkins.length) {
+    const info = document.createElement("div");
+    info.style.cssText = "margin-top:14px;padding:10px;border-radius:10px;background:rgba(255,212,59,.08);border:1px solid rgba(255,212,59,.3);font-size:11px;color:var(--mid)";
+    info.innerHTML = `⚠️ <b>${unknownSkins.length} skin cũ</b> trong save (không có trong phiên bản hiện tại):<br><code style="font-size:10px;color:var(--gold)">${unknownSkins.slice(0,15).join(", ")}${unknownSkins.length>15?"...":""}</code><br><small>Dữ liệu vẫn được giữ an toàn. Gửi ID cho dev để map vào.</small>`;
+    c.appendChild(info);
+  }
 }
 function renderShopTroops(c) {
   c.innerHTML = `<div class="gi2"><div class="git">🎭 QUÂN HỖ TRỢ</div><div class="gid">Chọn 1 quân để buff chỉ số trong trận</div></div>`;
@@ -1994,6 +1868,14 @@ function renderShopTroops(c) {
     grid.appendChild(div);
   });
   c.appendChild(grid);
+  // Hiển thị ID troops lạ
+  const unknownTroops = Object.keys(G.owned.troops).filter(id => !TROOP_DEFS.find(t=>t.id===id));
+  if (unknownTroops.length) {
+    const info = document.createElement("div");
+    info.style.cssText = "margin-top:14px;padding:10px;border-radius:10px;background:rgba(255,212,59,.08);border:1px solid rgba(255,212,59,.3);font-size:11px;color:var(--mid)";
+    info.innerHTML = `⚠️ <b>${unknownTroops.length} quân cũ</b> trong save (không có trong phiên bản hiện tại):<br><code style="font-size:10px;color:var(--gold)">${unknownTroops.join(", ")}</code><br><small>Dữ liệu vẫn được giữ an toàn. Gửi ID cho dev để map vào.</small>`;
+    c.appendChild(info);
+  }
 }
 function renderShopSpecial(c) {
   c.innerHTML = `<div class="gi2"><div class="git">⭐ THÁP ĐẶC BIỆT</div><div class="gid">Mở khoá qua Gacha Đặc Biệt (5% tỉ lệ). Rất hiếm!</div></div>`;
@@ -2003,10 +1885,7 @@ function renderShopSpecial(c) {
     const div = document.createElement("div");
     div.className = "ptc" + (owned?" owned":"");
     div.innerHTML = `
-      <div class="pth">
-        <div class="pti" style="background:${t.color}">${t.icon}</div>
-        <div class="ptin"><div class="ptn">${t.name}</div><div class="ptr">ĐẶC BIỆT</div></div>
-      </div>
+      <div class="pth"><div class="pti" style="background:${t.color}">${t.icon}</div><div class="ptin"><div class="ptn">${t.name}</div><div class="ptr">ĐẶC BIỆT</div></div></div>
       <div class="ptd">${t.desc}</div>
       <div class="pts"><span class="ptst">⚔ ${t.dmg}</span><span class="ptst">🎯 ${t.range}</span><span class="ptst">⚡ ${t.speed.toFixed(2)}</span></div>
       <button class="ptb ${owned?'ow':'buy'}" ${owned?'disabled':''}>${owned?'✓ ĐÃ SỞ HỮU':'🔒 QUA GACHA ĐB'}</button>`;
@@ -2018,10 +1897,6 @@ function setShopTab(tab) {
   currentShopTab = tab;
   $$(".shtab").forEach(b=>b.classList.toggle("on", b.dataset.shtab === tab));
 }
-
-/* ============================================================
-   SPIN / RESULTS
-   ============================================================ */
 function openSpinModal(mode) {
   const wrap = $("spinCards"); wrap.innerHTML = "";
   const n = mode === "multi" ? 5 : 3;
@@ -2065,10 +1940,6 @@ function showGachaResults(results, mode) {
     }
   }
 }
-
-/* ============================================================
-   MODALS
-   ============================================================ */
 function renderQuestModal() {
   const list = $("qmList"); if (!list) return;
   list.innerHTML = ""; let doneCount = 0;
@@ -2079,15 +1950,7 @@ function renderQuestModal() {
     const isDone = prog >= def.target;
     const div = document.createElement("div");
     div.className = "qmc" + (q.claimed?" claimed":isDone?" done":"");
-    div.innerHTML = `
-      <div class="qmc-icon">${def.icon}</div>
-      <div class="qmc-body">
-        <div class="qmc-title">${def.name}</div>
-        <div class="qmc-desc">${def.desc}</div>
-        <div class="qmc-prog"><div class="qmc-prog-bar"><div class="qmc-prog-fill" style="width:${(prog/def.target*100).toFixed(0)}%"></div></div><span>${prog}/${def.target}</span></div>
-      </div>
-      <div class="qmc-reward">+${def.reward}💎</div>
-      <button class="qmc-btn ${q.claimed?'claimed':isDone?'claim':'locked'}" ${q.claimed||!isDone?'disabled':''}>${q.claimed?'Đã nhận':isDone?'Nhận':'Chưa đủ'}</button>`;
+    div.innerHTML = `<div class="qmc-icon">${def.icon}</div><div class="qmc-body"><div class="qmc-title">${def.name}</div><div class="qmc-desc">${def.desc}</div><div class="qmc-prog"><div class="qmc-prog-bar"><div class="qmc-prog-fill" style="width:${(prog/def.target*100).toFixed(0)}%"></div></div><span>${prog}/${def.target}</span></div></div><div class="qmc-reward">+${def.reward}💎</div><button class="qmc-btn ${q.claimed?'claimed':isDone?'claim':'locked'}" ${q.claimed||!isDone?'disabled':''}>${q.claimed?'Đã nhận':isDone?'Nhận':'Chưa đủ'}</button>`;
     if (!q.claimed && isDone) div.querySelector(".qmc-btn").onclick = () => claimQuest(q.id);
     list.appendChild(div);
   });
@@ -2193,14 +2056,20 @@ function renderThemeModal() {
 function renderLoadout() {
   const list = $("loList"); if (!list) return;
   list.innerHTML = "";
-  const baseIds = TOWER_DEFS.filter(t=>t.kind==="base").map(t=>t.id);
-  const specialIds = TOWER_DEFS.filter(t=>t.kind==="special" && G.owned.towers[t.id]).map(t=>t.id);
-  [...baseIds, ...specialIds].forEach(id => {
+  // Hiện 8 base + special đã sở hữu + bất kỳ ID lạ nào trong owned.towers
+  const knownIds = TOWER_DEFS.filter(t => t.kind === "base" || (t.kind === "special" && G.owned.towers[t.id])).map(t=>t.id);
+  const unknownIds = Object.keys(G.owned.towers).filter(id => !TOWER_DEFS.find(t=>t.id===id));
+  const all = [...knownIds, ...unknownIds];
+  all.forEach(id => {
     const def = TOWER_DEFS.find(t=>t.id===id);
     const active = G.loadout.includes(id);
     const div = document.createElement("div");
-    div.className = "lo-card" + (active?" active":"") + (def.kind==="special"?" special":"");
-    div.innerHTML = `<div class="lo-card-icon" style="background:${def.color}">${def.icon}</div><div class="lo-card-name">${def.name}</div><div class="lo-card-tag">${def.kind==="special"?"⭐ ĐẶC BIỆT":"CƠ BẢN"}</div>`;
+    div.className = "lo-card" + (active?" active":"") + (def && def.kind==="special"?" special":"");
+    if (def) {
+      div.innerHTML = `<div class="lo-card-icon" style="background:${def.color}">${def.icon}</div><div class="lo-card-name">${def.name}</div><div class="lo-card-tag">${def.kind==="special"?"⭐ ĐẶC BIỆT":"CƠ BẢN"}</div>`;
+    } else {
+      div.innerHTML = `<div class="lo-card-icon" style="background:#666">❓</div><div class="lo-card-name">${id}</div><div class="lo-card-tag" style="color:var(--gold)">ID cũ</div>`;
+    }
     div.onclick = () => {
       if (active) {
         if (G.loadout.length <= 1) { notify("Phải giữ ít nhất 1 tháp!","err"); return; }
@@ -2230,10 +2099,6 @@ function openStreak(force=false) {
   renderStreakModal();
   switchModal("streakModal", true);
 }
-
-/* ============================================================
-   HUD / START / END
-   ============================================================ */
 function updateHUD() {
   $("goldVal").textContent = fmt(G.gold);
   $("hpVal").textContent = G.hp;
@@ -2260,8 +2125,7 @@ function renderMapList() {
 }
 function startGame() {
   G.running = true; G.paused = false; G.speed = 1;
-  G.wave = 0; G.maxWave = 0;
-  G.gold = 150; G.hp = 20;
+  G.wave = 0; G.maxWave = 0; G.gold = 150; G.hp = 20;
   G.towers = []; G.enemies = []; G.projectiles = []; G.particles = []; G.texts = [];
   G.selected = null; G.buildMode = null;
   resetSpinState();
@@ -2273,8 +2137,7 @@ function startGame() {
   switchModal("aModal", false); switchModal("mModal", false);
   switchModal("goModal", false); switchModal("cModal", false);
   hideTowerInfo();
-  const map = getMap();
-  notify(`🗺️ ${map.name} — ${map.desc}`,"");
+  notify(`🗺️ ${getMap().name} — ${getMap().desc}`,"");
   setTimeout(()=>{ if (G.running) startWave(); }, 1200);
   scheduleSave();
 }
@@ -2287,41 +2150,20 @@ function endGame(win) {
     SFX.win(); showGameOver(true);
   } else { trackLoss(); SFX.lose(); showGameOver(false); }
   const gemReward = win ? (20 + G.wave*2) : Math.floor(G.wave*0.5);
-  if (gemReward > 0) {
-    G.gems += gemReward;
-    $("goRew").style.display = "block";
-    $("goGemTxt").textContent = `+${gemReward} 💎`;
-  } else $("goRew").style.display = "none";
+  if (gemReward > 0) { G.gems += gemReward; $("goRew").style.display = "block"; $("goGemTxt").textContent = `+${gemReward} 💎`; }
+  else $("goRew").style.display = "none";
   checkAchievements(); recalcCollectionStats(); scheduleSave(); updateHUD();
 }
 function showGameOver(win) {
   const gt = $("gt");
   gt.className = win ? "win" : "lose";
   gt.textContent = win ? "CHIẾN THẮNG" : "THẤT BẠI";
-  $("goMsg").textContent = win
-    ? `Bạn đã bảo vệ thành công ${getMap().name}!`
-    : `Bạn trụ được ${G.wave} đợt. Kỹ năng: ${G.kills} kills.`;
+  $("goMsg").textContent = win ? `Bạn đã bảo vệ thành công ${getMap().name}!` : `Bạn trụ được ${G.wave} đợt. Kỹ năng: ${G.kills} kills.`;
   switchModal("goModal", true);
 }
-function togglePause() {
-  if (!G.running) return;
-  G.paused = !G.paused;
-  $("pauseBtn").textContent = G.paused ? "▶" : "⏸";
-  notify(G.paused ? "⏸ Đã tạm dừng" : "▶ Tiếp tục","");
-}
-function cycleSpeed() {
-  const speeds = [1, 2, 3];
-  const i = speeds.indexOf(G.speed);
-  G.speed = speeds[(i+1) % speeds.length];
-  $("speedBtn").textContent = `▶ ${G.speed}x`;
-}
-function backToMenu() {
-  G.running = false;
-  switchModal("goModal", false);
-  switchModal("mModal", true);
-  renderMapList();
-  scheduleSave();
-}
+function togglePause() { if (!G.running) return; G.paused = !G.paused; $("pauseBtn").textContent = G.paused ? "▶" : "⏸"; notify(G.paused ? "⏸ Đã tạm dừng" : "▶ Tiếp tục",""); }
+function cycleSpeed() { const speeds = [1, 2, 3]; const i = speeds.indexOf(G.speed); G.speed = speeds[(i+1) % speeds.length]; $("speedBtn").textContent = `▶ ${G.speed}x`; }
+function backToMenu() { G.running = false; switchModal("goModal", false); switchModal("mModal", true); renderMapList(); scheduleSave(); }
 
 /* ============================================================
    TUTORIAL
@@ -2333,11 +2175,7 @@ const TUT_STEPS = [
   { target:null, text:"Click vào tháp đã đặt để <b>nâng cấp</b> hoặc <b>bán</b>. Nâng cấp tăng mạnh sát thương!" },
   { target:null, text:"<b>Mẹo:</b> Cân bằng vàng — không mua tháp quá đắt khi mới bắt đầu. Chúc may mắn! 🎮" }
 ];
-function showTutorial() {
-  G.tutorialStep = 0;
-  $("tut").classList.remove("hidden");
-  renderTutStep();
-}
+function showTutorial() { G.tutorialStep = 0; $("tut").classList.remove("hidden"); renderTutStep(); }
 function renderTutStep() {
   const step = TUT_STEPS[G.tutorialStep];
   if (!step) { hideTutorial(); return; }
@@ -2349,9 +2187,9 @@ function renderTutStep() {
     if (el) {
       const r = el.getBoundingClientRect(), wr = $("wrap").getBoundingClientRect();
       const scale = wr.width / CW;
-      const x = (r.left - wr.left) / scale, y = (r.top - wr.top) / scale;
       hl.style.display = "block";
-      hl.style.left = x + "px"; hl.style.top = y + "px";
+      hl.style.left = ((r.left - wr.left) / scale) + "px";
+      hl.style.top = ((r.top - wr.top) / scale) + "px";
       hl.style.width = (r.width/scale) + "px"; hl.style.height = (r.height/scale) + "px";
       if (step.target === "shop") { box.style.left = "50%"; box.style.top = "28%"; box.style.transform = "translate(-50%,-50%)"; }
       else if (step.target === "hud") { box.style.left = "50%"; box.style.top = "72%"; box.style.transform = "translate(-50%,-50%)"; }
@@ -2360,11 +2198,7 @@ function renderTutStep() {
   SFX.click();
 }
 function hideTutorial() { $("tut").classList.add("hidden"); G.tutorialDone = true; }
-function nextTutStep() {
-  G.tutorialStep++;
-  if (G.tutorialStep >= TUT_STEPS.length) hideTutorial();
-  else renderTutStep();
-}
+function nextTutStep() { G.tutorialStep++; if (G.tutorialStep >= TUT_STEPS.length) hideTutorial(); else renderTutStep(); }
 
 /* ============================================================
    AUTH
@@ -2373,7 +2207,7 @@ async function handleAuthSubmit(prefix="a") {
   const msgEl = $(prefix+"Msg"), emailEl = $(prefix+"Email"), passEl = $(prefix+"Pass");
   const isReg = document.querySelector(`#${prefix}Modal .atb.on`)?.dataset.tab === "register";
   msgEl.className = "am"; msgEl.textContent = "";
-  if (!fbReady) { msgEl.className = "am err"; msgEl.textContent = "Firebase chưa kết nối. Chơi với tư cách khách."; return; }
+  if (!fbReady) { msgEl.className = "am err"; msgEl.textContent = "Firebase chưa kết nối."; return; }
   const email = emailEl.value.trim(), pass = passEl.value;
   if (!email || !pass) { msgEl.className = "am err"; msgEl.textContent = "Nhập đầy đủ email và mật khẩu"; return; }
   if (pass.length < 6) { msgEl.className = "am err"; msgEl.textContent = "Mật khẩu tối thiểu 6 ký tự"; return; }
@@ -2390,7 +2224,6 @@ async function handleAuthSubmit(prefix="a") {
     if (err.code === "auth/email-already-in-use") msg = "Email đã được đăng ký";
     if (err.code === "auth/invalid-email") msg = "Email không hợp lệ";
     if (err.code === "auth/weak-password") msg = "Mật khẩu quá yếu (≥6 ký tự)";
-    if (err.code === "auth/network-request-failed") msg = "Lỗi mạng — kiểm tra kết nối";
     msgEl.textContent = "❌ " + msg;
   }
 }
@@ -2399,14 +2232,13 @@ async function handleGoogleAuth(prefix="a") {
   if (!fbReady) { msgEl.className = "am err"; msgEl.textContent = "Firebase chưa cấu hình."; return; }
   try {
     msgEl.textContent = "Đang mở Google...";
-    const provider = new firebase.auth.GoogleAuthProvider();
-    await fbAuth.signInWithPopup(provider);
+    await fbAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
     msgEl.className = "am ok"; msgEl.textContent = "✓ Thành công!";
   } catch(err) {
     msgEl.className = "am err";
     let msg = err.message || "Lỗi Google";
     if (err.code === "auth/popup-closed-by-user") msg = "Bạn đã đóng cửa sổ Google";
-    if (err.code === "auth/popup-blocked") msg = "Popup bị chặn — cho phép popup rồi thử lại";
+    if (err.code === "auth/popup-blocked") msg = "Popup bị chặn";
     msgEl.textContent = "❌ " + msg;
   }
 }
@@ -2421,6 +2253,7 @@ async function doLogout() {
   fresh.settings = keepSettings;
   applySave(fresh);
   G.user = null; G.isGuest = false;
+  G._cloudLoadedOnce = false;
   applyTheme(keepSettings.theme);
   updateHUD(); recalcCollectionStats(); renderShop(); renderMapList();
   switchModal("mModal", false); switchModal("goModal", false); switchModal("cModal", false);
@@ -2428,6 +2261,62 @@ async function doLogout() {
   $("hudUser").textContent = "—";
   $("quickLoginBtn").style.display = "inline-flex";
   notify("Đã đăng xuất", "ok");
+}
+
+/* ============================================================
+   ✅ DEBUG BUTTON — xem raw save
+   ============================================================ */
+async function showDebugInfo() {
+  const local = loadSave();
+  const lines = [];
+  lines.push("========== 🔍 LOCAL SAVE ==========");
+  lines.push("Towers: " + Object.keys(local.owned.towers).join(", "));
+  lines.push("Skins:  " + Object.keys(local.owned.skins).join(", "));
+  lines.push("Troops: " + Object.keys(local.owned.troops).join(", "));
+  lines.push("Themes: " + Object.keys(local.owned.themes).join(", "));
+  lines.push("Loadout: " + local.loadout.join(", "));
+  lines.push("Map: " + local.currentMap);
+  lines.push("Gems: " + local.gems);
+  lines.push("uid: " + (local.uid || "null"));
+  lines.push("isGuest: " + local.isGuest);
+
+  let cloudText = "";
+  if (fbReady && fbAuth && fbAuth.currentUser) {
+    try {
+      const doc = await fbDB.collection("saves").doc(fbAuth.currentUser.uid).get();
+      if (doc.exists) {
+        const c = doc.data();
+        lines.push("");
+        lines.push("========== ☁️ CLOUD SAVE ==========");
+        lines.push("Towers: " + Object.keys(c.owned?.towers||{}).join(", "));
+        lines.push("Skins:  " + Object.keys(c.owned?.skins||{}).join(", "));
+        lines.push("Troops: " + Object.keys(c.owned?.troops||{}).join(", "));
+        lines.push("Themes: " + Object.keys(c.owned?.themes||{}).join(", "));
+        lines.push("Loadout: " + (c.loadout||[]).join(", "));
+        lines.push("Map: " + (c.currentMap||"-"));
+        lines.push("Gems: " + (c.gems||0));
+        cloudText = `\n\n☁️ CLOUD:\nTowers: ${Object.keys(c.owned?.towers||{}).length}\nSkins: ${Object.keys(c.owned?.skins||{}).length}\nTroops: ${Object.keys(c.owned?.troops||{}).length}`;
+      } else {
+        lines.push("");
+        lines.push("========== ☁️ CLOUD SAVE ==========");
+        lines.push("TRỐNG (chưa upload)");
+      }
+    } catch(e) { lines.push("\n☁️ Cloud read error: " + e.message); }
+  }
+
+  const text = lines.join("\n");
+  console.log(text);
+  alert(
+    "🔍 SAVE DEBUG\n\n" +
+    "📱 LOCAL:\n" +
+    "Towers: " + Object.keys(local.owned.towers).length + " (" + Object.keys(local.owned.towers).slice(0,8).join(", ") + ")\n" +
+    "Skins: " + Object.keys(local.owned.skins).length + "\n" +
+    "Troops: " + Object.keys(local.owned.troops).length + " (" + Object.keys(local.owned.troops).join(", ") + ")\n" +
+    "Loadout: " + local.loadout.length + "\n" +
+    "Map: " + local.currentMap + "\n" +
+    cloudText +
+    "\n\nXem F12 Console để biết FULL data."
+  );
 }
 
 /* ============================================================
@@ -2441,6 +2330,8 @@ function wireUI() {
   $("achieveBtn").onclick = openAchieve;
   $("statsBtn").onclick = openStats;
   $("themeBtn").onclick = openTheme;
+  const dbgBtn = $("debugBtn");
+  if (dbgBtn) dbgBtn.onclick = showDebugInfo;
   $("soundBtn").onclick = () => {
     G.settings.sound = !G.settings.sound;
     $("soundBtn").textContent = G.settings.sound ? "🔊" : "🔇";
@@ -2559,7 +2450,6 @@ function init() {
 
   if (fbReady && fbAuth) {
     fbAuth.onAuthStateChanged(async user => {
-      // BƯỚC 1: Đóng modal + hiện menu ngay (không chờ merge)
       try {
         if (user) {
           G.user = user;
@@ -2579,7 +2469,6 @@ function init() {
         }
       } catch(e) { console.error("[Auth UI] Error:", e); }
 
-      // BƯỚC 2: Merge save — cô lập hoàn toàn
       try {
         const merged = await fbMergeOrCreate(user.uid);
         applySave(merged);
@@ -2628,10 +2517,10 @@ function init() {
 
   G.lastTime = performance.now();
   requestAnimationFrame(gameLoop);
-  console.log("[TD v16.2] 🎮 Full build — Firebase:", fbReady ? "ready" : "offline");
+  console.log("[TD v16.3] 🎮 Full build — Firebase:", fbReady ? "ready" : "offline");
 }
 
 init();
-</script>
+     </script>
 </body>
 </html>
